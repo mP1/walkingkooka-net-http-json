@@ -67,7 +67,7 @@ final class JsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
         }
 
         if (null != bodyText) {
-            final Long contentLength = HttpHeaderName.CONTENT_LENGTH.headerValue(request).orElse(null);
+            final Long contentLength = HttpHeaderName.CONTENT_LENGTH.header(request).orElse(null);
             if (bodyText.isEmpty()) {
                 this.badRequest("Required body missing");
                 bodyText = null;
@@ -172,7 +172,7 @@ final class JsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
     }
 
     private CharsetName selectCharsetName() {
-        final AcceptCharset acceptCharset = HttpHeaderName.ACCEPT_CHARSET.headerValue(this.request)
+        final AcceptCharset acceptCharset = HttpHeaderName.ACCEPT_CHARSET.header(this.request)
                 .orElse(UTF8);
         final Optional<Charset> charset = acceptCharset.charset();
         if (!charset.isPresent()) {

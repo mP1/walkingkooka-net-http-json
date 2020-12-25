@@ -159,12 +159,12 @@ final class JsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
     void badRequest(final String message,
                     final Throwable cause) {
         this.badRequest(message);
-        JsonHttpRequestHttpResponseBiConsumerRequestStackTrace.setResponseBody(this.response, cause);
+        this.response.addEntity(HttpEntity.dumpStackTrace(cause));
     }
 
     void handleFailure(final Throwable cause) {
         this.setStatus(HttpStatusCode.INTERNAL_SERVER_ERROR.setMessageOrDefault(cause.getMessage()));
-        JsonHttpRequestHttpResponseBiConsumerRequestStackTrace.setResponseBody(this.response, cause);
+        this.response.addEntity(HttpEntity.dumpStackTrace(cause));
     }
 
     // set status, headers, body........................................................................................

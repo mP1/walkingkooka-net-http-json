@@ -125,6 +125,47 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
     }
 
     @Test
+    public void testMissingContentTypeFails() {
+        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+
+        final HttpRequest request = this.request(HttpEntity.EMPTY
+                .setBodyText("")
+                .setContentLength());
+
+        final HttpResponse response = HttpResponses.recording();
+
+        consumer.accept(request, response);
+
+        final HttpResponse expected = HttpResponses.recording();
+        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Missing " + HttpHeaderName.CONTENT_TYPE));
+        expected.setVersion(HttpProtocolVersion.VERSION_1_0);
+
+        assertEquals(expected, response, () -> "response\n" + request);
+    }
+
+    @Test
+    public void testInvalidContentTypeFails() {
+        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+
+        final MediaType contentType = MediaType.BINARY;
+
+        final HttpRequest request = this.request(HttpEntity.EMPTY
+                .addHeader(HttpHeaderName.CONTENT_TYPE, contentType)
+                .setBodyText("")
+                .setContentLength());
+
+        final HttpResponse response = HttpResponses.recording();
+
+        consumer.accept(request, response);
+
+        final HttpResponse expected = HttpResponses.recording();
+        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Header " + HttpHeaderName.CONTENT_TYPE + " expected " + MediaType.APPLICATION_JSON + " got " + contentType));
+        expected.setVersion(HttpProtocolVersion.VERSION_1_0);
+
+        assertEquals(expected, response, () -> "response\n" + request);
+    }
+
+    @Test
     public void testMissingRequestBodyFails() {
         final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
@@ -247,6 +288,34 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .setBodyText(MARSHALL_CONTEXT.marshall(INPUT)
+                        .toString())
+                .setContentLength());
+
+        final HttpResponse response = HttpResponses.recording();
+
+        consumer.accept(request, response);
+
+        final String responseBody = MARSHALL_CONTEXT.marshall(OUTPUT).toString();
+
+        final HttpResponse expected = HttpResponses.recording();
+        expected.setStatus(HttpStatusCode.OK.setMessage("POST AbsoluteUrl OK"));
+        expected.setVersion(HttpProtocolVersion.VERSION_1_0);
+        expected.addEntity(HttpEntity.EMPTY
+                .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
+                .addHeader(JsonHttpRequestHttpResponseBiConsumers.X_CONTENT_TYPE_NAME, OUTPUT_TYPE.getSimpleName())
+                .setBodyText(responseBody)
+                .setContentLength());
+
+        assertEquals(expected, response, () -> "response\n" + request);
+    }
+
+    @Test
+    public void testSuccessfulContentTypeWithCharset() {
+        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+
+        final HttpRequest request = this.request(HttpEntity.EMPTY
+                .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
                 .setBodyText(MARSHALL_CONTEXT.marshall(INPUT)
                         .toString())
                 .setContentLength());

@@ -17,6 +17,7 @@
 
 package walkingkooka.net.http.json;
 
+import walkingkooka.net.header.MediaType;
 import walkingkooka.net.http.HttpMethod;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.server.HttpRequest;
@@ -79,17 +80,20 @@ final class JsonHttpRequestHttpResponseBiConsumer<I, O> implements BiConsumer<Ht
     private void handle(final JsonHttpRequestHttpResponseBiConsumerRequest<I, O> request) {
         final HttpMethod method = request.postOrMethodNotAllowed();
         if (null != method) {
-            final String bodyText = request.resourceTextOrBadRequest();
-            if (null != bodyText) {
-                final JsonNodeUnmarshallContext unmarshallContext = this.unmarshallContext;
-                final I input = request.resourceOrBadRequest(bodyText, this.inputType, unmarshallContext);
-                if (null != input) {
-                    try {
-                        final O output = this.handler.apply(input);
-                        request.setStatus(HttpStatusCode.OK.status());
-                        request.writeResponse(output, this.marshallContext);
-                    } catch (final Exception cause) {
-                        request.handleFailure(cause);
+            final MediaType contentType = request.contentTypeApplicationJsonOrBadRequest();
+            if (null != contentType) {
+                final String bodyText = request.resourceTextOrBadRequest();
+                if (null != bodyText) {
+                    final JsonNodeUnmarshallContext unmarshallContext = this.unmarshallContext;
+                    final I input = request.resourceOrBadRequest(bodyText, this.inputType, unmarshallContext);
+                    if (null != input) {
+                        try {
+                            final O output = this.handler.apply(input);
+                            request.setStatus(HttpStatusCode.OK.status());
+                            request.writeResponse(output, this.marshallContext);
+                        } catch (final Exception cause) {
+                            request.handleFailure(cause);
+                        }
                     }
                 }
             }

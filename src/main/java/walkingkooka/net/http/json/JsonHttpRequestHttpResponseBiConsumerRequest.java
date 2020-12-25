@@ -63,6 +63,24 @@ final class JsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
         return method;
     }
 
+    MediaType contentTypeApplicationJsonOrBadRequest() {
+        MediaType contentType = CONTENT_TYPE.header(this.request)
+                .orElse(null);
+        if (null == contentType) {
+            this.badRequest("Missing " + HttpHeaderName.CONTENT_TYPE);
+        } else {
+            if (!JSON.equalsIgnoringParameters(contentType)) {
+                this.badRequest("Header " + CONTENT_TYPE + " expected " + JSON + " got " + contentType);
+                contentType = null;
+            }
+        }
+
+        return contentType;
+    }
+
+    private final static HttpHeaderName<MediaType> CONTENT_TYPE = HttpHeaderName.CONTENT_TYPE;
+    private final static MediaType JSON = MediaType.APPLICATION_JSON;
+
     /**
      * Reads and returns the body as text, with null signifying an error occurred and a bad request response set.
      */

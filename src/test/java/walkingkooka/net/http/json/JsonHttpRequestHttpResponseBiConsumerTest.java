@@ -28,6 +28,7 @@ import walkingkooka.net.header.CharsetName;
 import walkingkooka.net.header.HttpHeaderName;
 import walkingkooka.net.header.MediaType;
 import walkingkooka.net.http.HttpEntity;
+import walkingkooka.net.http.HttpMethod;
 import walkingkooka.net.http.HttpProtocolVersion;
 import walkingkooka.net.http.HttpStatus;
 import walkingkooka.net.http.HttpStatusCode;
@@ -48,6 +49,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -102,6 +104,27 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
     }
 
     @Test
+    public void testMethodNotPostFailsFails() {
+        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+
+        final HttpRequest request = this.request(HttpMethod.PUT,
+                HttpEntity.EMPTY
+                        .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .setBodyText("")
+                        .setContentLength());
+
+        final HttpResponse response = HttpResponses.recording();
+
+        consumer.accept(request, response);
+
+        final HttpResponse expected = HttpResponses.recording();
+        expected.setStatus(HttpStatusCode.METHOD_NOT_ALLOWED.setMessage("Expected POST got PUT"));
+        expected.setVersion(HttpProtocolVersion.VERSION_1_0);
+
+        assertEquals(expected, response, () -> "response\n" + request);
+    }
+
+    @Test
     public void testMissingRequestBodyFails() {
         final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
@@ -118,7 +141,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Required body missing"));
         expected.setVersion(HttpProtocolVersion.VERSION_1_0);
 
-        assertEquals(expected, response, "response");
+        assertEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -138,7 +161,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Content-Length: 100 != body length=2 mismatch"));
         expected.setVersion(HttpProtocolVersion.VERSION_1_0);
 
-        assertEquals(expected, response, "response");
+        assertEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -172,7 +195,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
         expected.setStatus(HttpStatusCode.LENGTH_REQUIRED.status());
         expected.setVersion(HttpProtocolVersion.VERSION_1_0);
 
-        assertEquals(expected, response, "response");
+        assertEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -243,7 +266,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
                 .setBodyText(responseBody)
                 .setContentLength());
 
-        assertEquals(expected, response, "response");
+        assertEquals(expected, response, () -> "response\n" + request);
     }
 
     private JsonHttpRequestHttpResponseBiConsumer createConsumer() {
@@ -259,7 +282,16 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
     }
 
     private HttpRequest request(final HttpEntity entity) {
-        return HttpRequests.post(HttpTransport.UNSECURED,
+        return this.request(HttpMethod.POST, entity);
+    }
+
+    private HttpRequest request(final HttpMethod method,
+                                final HttpEntity entity) {
+        assertNotEquals(null, method, "method");
+        assertNotEquals(null, entity, "entity");
+
+        return HttpRequests.value(method,
+                HttpTransport.UNSECURED,
                 Url.parseRelative("/handler"),
                 HttpProtocolVersion.VERSION_1_0,
                 entity);

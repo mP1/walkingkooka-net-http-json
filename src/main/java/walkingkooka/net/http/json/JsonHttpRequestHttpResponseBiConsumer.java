@@ -17,6 +17,7 @@
 
 package walkingkooka.net.http.json;
 
+import walkingkooka.net.http.HttpMethod;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpResponse;
@@ -76,17 +77,20 @@ final class JsonHttpRequestHttpResponseBiConsumer<I, O> implements BiConsumer<Ht
      * result back to the response.
      */
     private void handle(final JsonHttpRequestHttpResponseBiConsumerRequest<I, O> request) {
-        final String bodyText = request.resourceTextOrBadRequest();
-        if (null != bodyText) {
-            final JsonNodeUnmarshallContext unmarshallContext = this.unmarshallContext;
-            final I input = request.resourceOrBadRequest(bodyText, this.inputType, unmarshallContext);
-            if (null != input) {
-                try {
-                    final O output = this.handler.apply(input);
-                    request.setStatus(HttpStatusCode.OK.status());
-                    request.writeResponse(output, this.marshallContext);
-                } catch (final Exception cause) {
-                    request.handleFailure(cause);
+        final HttpMethod method = request.postOrMethodNotAllowed();
+        if (null != method) {
+            final String bodyText = request.resourceTextOrBadRequest();
+            if (null != bodyText) {
+                final JsonNodeUnmarshallContext unmarshallContext = this.unmarshallContext;
+                final I input = request.resourceOrBadRequest(bodyText, this.inputType, unmarshallContext);
+                if (null != input) {
+                    try {
+                        final O output = this.handler.apply(input);
+                        request.setStatus(HttpStatusCode.OK.status());
+                        request.writeResponse(output, this.marshallContext);
+                    } catch (final Exception cause) {
+                        request.handleFailure(cause);
+                    }
                 }
             }
         }

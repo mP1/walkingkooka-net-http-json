@@ -52,6 +52,17 @@ final class JsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
         this.response = response;
     }
 
+    HttpMethod postOrMethodNotAllowed() {
+        HttpMethod method = this.request.method();
+        if(!HttpMethod.POST.equals(method)) {
+            this.setStatus(HttpStatusCode.METHOD_NOT_ALLOWED
+                    .setMessage("Expected POST got " + method)
+            );
+            method = null;
+        }
+        return method;
+    }
+
     /**
      * Reads and returns the body as text, with null signifying an error occurred and a bad request response set.
      */

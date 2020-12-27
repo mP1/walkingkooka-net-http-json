@@ -30,7 +30,17 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
- * Accepts a {@link HttpRequest} expecting JSON, handling the glue between marshalling and unmarshalling and invoking the given {@link Function}.
+ * A handler that accepts a POST request, unmarshalling the body into a the given {@link Class input type} instance.
+ * This instance is then passed to a {@link Function} which then returns another instance as its result. This result
+ * is then marshalled into JSON and written to the response body.
+ * Any {@link RuntimeException} that are thrown by the {@link Function} result in a {@link HttpStatusCode#INTERNAL_SERVER_ERROR},
+ * with the stack trace written to the response body.
+ * The following are requirements of the request.
+ * <ul>
+ * <li>Only POST method is allowed, others result in {#link HttpStatusCode#METHOD_NOT_ALLOWED} </li>
+ * <li>Content-Type: application/json other types result in a @link HttpStatusCode#BAD_REQUEST</li>
+ * <li>JSON Marshalling failures result in @link HttpStatusCode#BAD_REQUEST</li>
+ * </ul>
  */
 final class JsonHttpRequestHttpResponseBiConsumer<I, O> implements BiConsumer<HttpRequest, HttpResponse> {
 
@@ -51,7 +61,6 @@ final class JsonHttpRequestHttpResponseBiConsumer<I, O> implements BiConsumer<Ht
                 marshallContext,
                 unmarshallContext);
     }
-
 
     private JsonHttpRequestHttpResponseBiConsumer(final Function<I, O> handler,
                                                   final Class<I> inputType,

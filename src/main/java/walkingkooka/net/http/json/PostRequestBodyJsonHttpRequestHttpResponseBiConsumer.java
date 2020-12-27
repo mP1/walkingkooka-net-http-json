@@ -42,31 +42,31 @@ import java.util.function.Function;
  * <li>JSON Marshalling failures result in @link HttpStatusCode#BAD_REQUEST</li>
  * </ul>
  */
-final class JsonHttpRequestHttpResponseBiConsumer<I, O> implements BiConsumer<HttpRequest, HttpResponse> {
+final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<I, O> implements BiConsumer<HttpRequest, HttpResponse> {
 
-    static <I, O> JsonHttpRequestHttpResponseBiConsumer<I, O> with(final Function<I, O> handler,
-                                                                   final Class<I> inputType,
-                                                                   final Class<O> outputType,
-                                                                   final JsonNodeMarshallContext marshallContext,
-                                                                   final JsonNodeUnmarshallContext unmarshallContext) {
+    static <I, O> PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<I, O> with(final Function<I, O> handler,
+                                                                                  final Class<I> inputType,
+                                                                                  final Class<O> outputType,
+                                                                                  final JsonNodeMarshallContext marshallContext,
+                                                                                  final JsonNodeUnmarshallContext unmarshallContext) {
         Objects.requireNonNull(handler, "handler");
         Objects.requireNonNull(inputType, "inputType");
         Objects.requireNonNull(outputType, "outputType");
         Objects.requireNonNull(marshallContext, "marshallContext");
         Objects.requireNonNull(unmarshallContext, "unmarshallContext");
 
-        return new JsonHttpRequestHttpResponseBiConsumer<>(handler,
+        return new PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<>(handler,
                 inputType,
                 outputType,
                 marshallContext,
                 unmarshallContext);
     }
 
-    private JsonHttpRequestHttpResponseBiConsumer(final Function<I, O> handler,
-                                                  final Class<I> inputType,
-                                                  final Class<O> outputType,
-                                                  final JsonNodeMarshallContext marshallContext,
-                                                  final JsonNodeUnmarshallContext unmarshallContext) {
+    private PostRequestBodyJsonHttpRequestHttpResponseBiConsumer(final Function<I, O> handler,
+                                                                 final Class<I> inputType,
+                                                                 final Class<O> outputType,
+                                                                 final JsonNodeMarshallContext marshallContext,
+                                                                 final JsonNodeUnmarshallContext unmarshallContext) {
         super();
 
         this.handler = handler;
@@ -79,14 +79,14 @@ final class JsonHttpRequestHttpResponseBiConsumer<I, O> implements BiConsumer<Ht
     public void accept(final HttpRequest request, final HttpResponse response) {
         response.setVersion(request.protocolVersion());
 
-        this.handle(JsonHttpRequestHttpResponseBiConsumerRequest.with(request, response));
+        this.handle(PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest.with(request, response));
     }
 
     /**
      * Handles a request expecting JSON, unmarshalling the request body, calling the function and then marshalling the
      * result back to the response.
      */
-    private void handle(final JsonHttpRequestHttpResponseBiConsumerRequest<I, O> request) {
+    private void handle(final PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest<I, O> request) {
         final HttpMethod method = request.postOrMethodNotAllowed();
         if (null != method) {
             final MediaType contentType = request.contentTypeApplicationJsonOrBadRequest();

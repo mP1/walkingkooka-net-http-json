@@ -37,17 +37,17 @@ import java.util.Optional;
 
 /**
  * Represents a single request and includes methods to handle key steps in processing. This methods are only called by
- * {@link JsonHttpRequestHttpResponseBiConsumer}.
+ * {@link PostRequestBodyJsonHttpRequestHttpResponseBiConsumer}.
  */
-final class JsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
+final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
 
-    static <I, O> JsonHttpRequestHttpResponseBiConsumerRequest<I, O> with(final HttpRequest request,
-                                                                          final HttpResponse response) {
-        return new JsonHttpRequestHttpResponseBiConsumerRequest<>(request, response);
+    static <I, O> PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest<I, O> with(final HttpRequest request,
+                                                                                         final HttpResponse response) {
+        return new PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest<>(request, response);
     }
 
-    private JsonHttpRequestHttpResponseBiConsumerRequest(final HttpRequest request,
-                                                         final HttpResponse response) {
+    private PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest(final HttpRequest request,
+                                                                        final HttpResponse response) {
         super();
         this.request = request;
         this.response = response;

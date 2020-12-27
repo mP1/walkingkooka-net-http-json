@@ -53,8 +53,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpRequestHttpResponseBiConsumerTestCase<JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl>>
-        implements ToStringTesting<JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl>> {
+public final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumerTest extends PostRequestBodyJsonHttpRequestHttpResponseBiConsumerTestCase<PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl>>
+        implements ToStringTesting<PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl>> {
 
     private final static RelativeUrl INPUT = Url.parseRelative("/input");
     private final static Class<RelativeUrl> INPUT_TYPE = RelativeUrl.class;
@@ -100,12 +100,12 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
                            final Class<AbsoluteUrl> outputType,
                            final JsonNodeMarshallContext marshallContext,
                            final JsonNodeUnmarshallContext unmarshallContext) {
-        assertThrows(NullPointerException.class, () -> JsonHttpRequestHttpResponseBiConsumer.with(handler, inputType, outputType, marshallContext, unmarshallContext));
+        assertThrows(NullPointerException.class, () -> PostRequestBodyJsonHttpRequestHttpResponseBiConsumer.with(handler, inputType, outputType, marshallContext, unmarshallContext));
     }
 
     @Test
     public void testMethodNotPostFailsFails() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpMethod.PUT,
                 HttpEntity.EMPTY
@@ -126,7 +126,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testMissingContentTypeFails() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .setBodyText("")
@@ -145,7 +145,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testInvalidContentTypeFails() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final MediaType contentType = MediaType.BINARY;
 
@@ -167,7 +167,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testMissingRequestBodyFails() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -187,7 +187,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testInvalidContentLengthFails() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -207,7 +207,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testInvalidRequestBodyFails() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -222,7 +222,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testRequestContentLengthMissingFails() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -242,7 +242,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
     @Test
     public void testHandlerFails() {
         final String message = "Something went wrong!";
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer((i) -> {
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer((i) -> {
             throw new IllegalArgumentException(message);
         });
 
@@ -258,7 +258,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
                 message);
     }
 
-    private void acceptFails(final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer,
+    private void acceptFails(final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer,
                              final HttpRequest request,
                              final HttpStatus status,
                              final String responseBodyContains) {
@@ -284,7 +284,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testSuccessful() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -312,7 +312,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testSuccessfulContentTypeWithCharset() {
-        final JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
@@ -338,12 +338,12 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
         assertEquals(expected, response, () -> "response\n" + request);
     }
 
-    private JsonHttpRequestHttpResponseBiConsumer createConsumer() {
+    private PostRequestBodyJsonHttpRequestHttpResponseBiConsumer createConsumer() {
         return this.createConsumer(HANDLER);
     }
 
-    private JsonHttpRequestHttpResponseBiConsumer createConsumer(final Function<RelativeUrl, AbsoluteUrl> handler) {
-        return JsonHttpRequestHttpResponseBiConsumer.with(handler,
+    private PostRequestBodyJsonHttpRequestHttpResponseBiConsumer createConsumer(final Function<RelativeUrl, AbsoluteUrl> handler) {
+        return PostRequestBodyJsonHttpRequestHttpResponseBiConsumer.with(handler,
                 INPUT_TYPE,
                 OUTPUT_TYPE,
                 MARSHALL_CONTEXT,
@@ -368,13 +368,13 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest extends JsonHttpReq
 
     @Test
     public void testToString() {
-        this.toStringAndCheck(JsonHttpRequestHttpResponseBiConsumer.with(HANDLER, INPUT_TYPE, OUTPUT_TYPE, MARSHALL_CONTEXT, UNMARSHALL_CONTEXT), HANDLER.toString());
+        this.toStringAndCheck(PostRequestBodyJsonHttpRequestHttpResponseBiConsumer.with(HANDLER, INPUT_TYPE, OUTPUT_TYPE, MARSHALL_CONTEXT, UNMARSHALL_CONTEXT), HANDLER.toString());
     }
 
     // ClassTesting.....................................................................................................
 
     @Override
-    public Class<JsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl>> type() {
-        return Cast.to(JsonHttpRequestHttpResponseBiConsumer.class);
+    public Class<PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl>> type() {
+        return Cast.to(PostRequestBodyJsonHttpRequestHttpResponseBiConsumer.class);
     }
 }

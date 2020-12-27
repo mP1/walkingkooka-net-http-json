@@ -72,6 +72,7 @@ public class Sample {
                 HttpProtocolVersion.VERSION_1_0,
                 HttpEntity.EMPTY
                         .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .addHeader(HttpHeaderName.ACCEPT, MediaType.APPLICATION_JSON.accept())
                         .setBodyText(marshallContext.marshall(input)
                                 .toString())
                         .setContentLength());

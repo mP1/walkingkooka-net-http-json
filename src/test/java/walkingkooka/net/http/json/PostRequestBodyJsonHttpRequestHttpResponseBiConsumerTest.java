@@ -24,6 +24,7 @@ import walkingkooka.collect.list.Lists;
 import walkingkooka.net.AbsoluteUrl;
 import walkingkooka.net.RelativeUrl;
 import walkingkooka.net.Url;
+import walkingkooka.net.header.Accept;
 import walkingkooka.net.header.CharsetName;
 import walkingkooka.net.header.HttpHeaderName;
 import walkingkooka.net.header.MediaType;
@@ -240,6 +241,49 @@ public final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumerTest exte
     }
 
     @Test
+    public void testRequestAcceptMissingFails() {
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+
+        final HttpRequest request = this.request(HttpEntity.EMPTY
+                .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .setBodyText(MARSHALL_CONTEXT.marshall(INPUT)
+                        .toString())
+                .setContentLength());
+
+        final HttpResponse response = HttpResponses.recording();
+
+        consumer.accept(request, response);
+
+        final HttpResponse expected = HttpResponses.recording();
+        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Missing Accept"));
+        expected.setVersion(HttpProtocolVersion.VERSION_1_0);
+
+        assertEquals(expected, response, () -> "response\n" + request);
+    }
+
+    @Test
+    public void testRequestAcceptIncompatibleFails() {
+        final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
+
+        final HttpRequest request = this.request(HttpEntity.EMPTY
+                .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .addHeader(HttpHeaderName.ACCEPT, MediaType.IMAGE_JPEG.accept())
+                .setBodyText(MARSHALL_CONTEXT.marshall(INPUT)
+                        .toString())
+                .setContentLength());
+
+        final HttpResponse response = HttpResponses.recording();
+
+        consumer.accept(request, response);
+
+        final HttpResponse expected = HttpResponses.recording();
+        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Header Accept expected application/json got image/jpeg"));
+        expected.setVersion(HttpProtocolVersion.VERSION_1_0);
+
+        assertEquals(expected, response, () -> "response\n" + request);
+    }
+
+    @Test
     public void testHandlerFails() {
         final String message = "Something went wrong!";
         final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer((i) -> {
@@ -248,6 +292,7 @@ public final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumerTest exte
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .addHeader(HttpHeaderName.ACCEPT, MediaType.APPLICATION_JSON.accept())
                 .setBodyText(MARSHALL_CONTEXT.marshall(INPUT)
                         .toString())
                 .setContentLength());
@@ -283,11 +328,21 @@ public final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumerTest exte
     }
 
     @Test
-    public void testSuccessful() {
+    public void testSuccessfulAcceptApplicationJson() {
+        this.successfulAndCheck(MediaType.APPLICATION_JSON.accept());
+    }
+
+    @Test
+    public void testSuccessfulAcceptWildcard() {
+        this.successfulAndCheck(MediaType.ALL.accept());
+    }
+
+    private void successfulAndCheck(final Accept accept) {
         final PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<RelativeUrl, AbsoluteUrl> consumer = this.createConsumer();
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .addHeader(HttpHeaderName.ACCEPT, accept)
                 .setBodyText(MARSHALL_CONTEXT.marshall(INPUT)
                         .toString())
                 .setContentLength());
@@ -316,6 +371,7 @@ public final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumerTest exte
 
         final HttpRequest request = this.request(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
+                .addHeader(HttpHeaderName.ACCEPT, MediaType.APPLICATION_JSON.accept())
                 .setBodyText(MARSHALL_CONTEXT.marshall(INPUT)
                         .toString())
                 .setContentLength());

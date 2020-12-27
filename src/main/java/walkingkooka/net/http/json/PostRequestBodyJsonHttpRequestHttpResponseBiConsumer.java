@@ -17,6 +17,7 @@
 
 package walkingkooka.net.http.json;
 
+import walkingkooka.net.header.Accept;
 import walkingkooka.net.header.MediaType;
 import walkingkooka.net.http.HttpMethod;
 import walkingkooka.net.http.HttpStatusCode;
@@ -96,12 +97,15 @@ final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumer<I, O> implement
                     final JsonNodeUnmarshallContext unmarshallContext = this.unmarshallContext;
                     final I input = request.resourceOrBadRequest(bodyText, this.inputType, unmarshallContext);
                     if (null != input) {
-                        try {
-                            final O output = this.handler.apply(input);
-                            request.setStatus(HttpStatusCode.OK.status());
-                            request.writeResponse(output, this.marshallContext);
-                        } catch (final Exception cause) {
-                            request.handleFailure(cause);
+                        final Accept accept = request.acceptApplicationJsonOrBadRequest();
+                        if (null != accept) {
+                            try {
+                                final O output = this.handler.apply(input);
+                                request.setStatus(HttpStatusCode.OK.status());
+                                request.writeResponse(output, this.marshallContext);
+                            } catch (final Exception cause) {
+                                request.handleFailure(cause);
+                            }
                         }
                     }
                 }

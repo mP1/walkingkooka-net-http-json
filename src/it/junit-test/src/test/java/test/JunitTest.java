@@ -59,7 +59,7 @@ public class JunitTest {
         final JsonNodeMarshallContext marshallContext = JsonNodeMarshallContexts.basic();
         final JsonNodeUnmarshallContext unmarshallContext = JsonNodeUnmarshallContexts.basic(ExpressionNumberContexts.fake());
 
-        final BiConsumer<HttpRequest, HttpResponse> consumer = JsonHttpRequestHttpResponseBiConsumers.consumer(handler,
+        final BiConsumer<HttpRequest, HttpResponse> consumer = JsonHttpRequestHttpResponseBiConsumers.postRequestBody(handler,
                 RelativeUrl.class,
                 AbsoluteUrl.class,
                 marshallContext,

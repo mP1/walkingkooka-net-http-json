@@ -36,7 +36,8 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 
 /**
- * Represents a single request and includes methods to handle key steps in processing.
+ * Represents a single request and includes methods to handle key steps in processing. This methods are only called by
+ * {@link JsonHttpRequestHttpResponseBiConsumer}.
  */
 final class JsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
 

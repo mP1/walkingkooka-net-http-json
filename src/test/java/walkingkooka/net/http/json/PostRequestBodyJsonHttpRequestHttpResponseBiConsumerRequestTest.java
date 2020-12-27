@@ -17,29 +17,9 @@
 
 package walkingkooka.net.http.json;
 
-import walkingkooka.reflect.ClassTesting;
-import walkingkooka.reflect.JavaVisibility;
-import walkingkooka.reflect.TypeNameTesting;
-
-public abstract class JsonHttpRequestHttpResponseBiConsumerTestCase<T> implements ClassTesting<T>,
-        TypeNameTesting<T> {
-
-    JsonHttpRequestHttpResponseBiConsumerTestCase() {
-        super();
-    }
-
+public final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequestTest extends PostRequestBodyJsonHttpRequestHttpResponseBiConsumerTestCase<PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest> {
     @Override
-    public final JavaVisibility typeVisibility() {
-        return JavaVisibility.PACKAGE_PRIVATE;
-    }
-
-    @Override
-    public final String typeNamePrefix() {
-        return JsonHttpRequestHttpResponseBiConsumer.class.getSimpleName();
-    }
-
-    @Override
-    public final String typeNameSuffix() {
-        return "";
+    public Class<PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest> type() {
+        return PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest.class;
     }
 }

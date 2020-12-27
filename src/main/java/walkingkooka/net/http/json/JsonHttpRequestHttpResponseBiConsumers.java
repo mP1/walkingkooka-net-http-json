@@ -36,14 +36,14 @@ public final class JsonHttpRequestHttpResponseBiConsumers implements PublicStati
     public final static HttpHeaderName<String> X_CONTENT_TYPE_NAME = HttpHeaderName.with("X-Content-Type-Name").stringValues();
 
     /**
-     * {@see JsonHttpRequestHttpResponseBiConsumer}
+     * {@see PostRequestBodyJsonHttpRequestHttpResponseBiConsumer}
      */
     public static <I, O> BiConsumer<HttpRequest, HttpResponse> consumer(final Function<I, O> handler,
                                                                         final Class<I> inputType,
                                                                         final Class<O> outputType,
                                                                         final JsonNodeMarshallContext marshallContext,
                                                                         final JsonNodeUnmarshallContext unmarshallContext) {
-        return JsonHttpRequestHttpResponseBiConsumer.with(handler,
+        return PostRequestBodyJsonHttpRequestHttpResponseBiConsumer.with(handler,
                 inputType,
                 outputType,
                 marshallContext,

@@ -38,11 +38,11 @@ public final class JsonHttpRequestHttpResponseBiConsumers implements PublicStati
     /**
      * {@see PostRequestBodyJsonHttpRequestHttpResponseBiConsumer}
      */
-    public static <I, O> BiConsumer<HttpRequest, HttpResponse> consumer(final Function<I, O> handler,
-                                                                        final Class<I> inputType,
-                                                                        final Class<O> outputType,
-                                                                        final JsonNodeMarshallContext marshallContext,
-                                                                        final JsonNodeUnmarshallContext unmarshallContext) {
+    public static <I, O> BiConsumer<HttpRequest, HttpResponse> postRequestBody(final Function<I, O> handler,
+                                                                               final Class<I> inputType,
+                                                                               final Class<O> outputType,
+                                                                               final JsonNodeMarshallContext marshallContext,
+                                                                               final JsonNodeUnmarshallContext unmarshallContext) {
         return PostRequestBodyJsonHttpRequestHttpResponseBiConsumer.with(handler,
                 inputType,
                 outputType,

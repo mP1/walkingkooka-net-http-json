@@ -17,6 +17,7 @@
 
 package walkingkooka.net.http.json;
 
+import walkingkooka.net.header.Accept;
 import walkingkooka.net.header.AcceptCharset;
 import walkingkooka.net.header.CharsetName;
 import walkingkooka.net.header.HttpHeaderName;
@@ -136,6 +137,25 @@ final class PostRequestBodyJsonHttpRequestHttpResponseBiConsumerRequest<I, O> {
             resource = null;
         }
         return resource;
+    }
+
+    /**
+     * The client must include a header accept: application/json
+     */
+    Accept acceptApplicationJsonOrBadRequest() {
+        final HttpHeaderName<Accept> header = HttpHeaderName.ACCEPT;
+        Accept accept = header.header(this.request)
+                .orElse(null);
+        if (null == accept) {
+            this.badRequest("Missing " + HttpHeaderName.ACCEPT);
+        } else {
+            if (!accept.test(JSON)) {
+                this.badRequest("Header " + header + " expected " + JSON + " got " + accept);
+                accept = null;
+            }
+        }
+
+        return accept;
     }
 
     /**

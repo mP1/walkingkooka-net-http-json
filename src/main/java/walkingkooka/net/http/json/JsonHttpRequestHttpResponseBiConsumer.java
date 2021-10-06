@@ -45,7 +45,7 @@ final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequ
         return new JsonHttpRequestHttpResponseBiConsumer(handler);
     }
 
-    private JsonHttpRequestHttpResponseBiConsumer(final Function handler) {
+    private JsonHttpRequestHttpResponseBiConsumer(final Function<JsonNode, JsonNode> handler) {
         super();
 
         this.handler = handler;

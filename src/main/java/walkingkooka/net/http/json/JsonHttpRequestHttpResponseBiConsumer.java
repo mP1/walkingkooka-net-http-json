@@ -17,15 +17,20 @@
 
 package walkingkooka.net.http.json;
 
+import walkingkooka.net.header.AcceptCharset;
+import walkingkooka.net.header.CharsetName;
 import walkingkooka.net.header.HttpHeaderName;
 import walkingkooka.net.header.MediaType;
+import walkingkooka.net.header.NotAcceptableHeaderException;
 import walkingkooka.net.http.HttpEntity;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.tree.json.JsonNode;
 
+import java.nio.charset.Charset;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -64,7 +69,10 @@ final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequ
                 response.setStatus(HttpStatusCode.OK.status());
                 response.addEntity(
                         HttpEntity.EMPTY
-                                .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                .addHeader(
+                                        HttpHeaderName.CONTENT_TYPE,
+                                        MediaType.APPLICATION_JSON.setCharset(selectCharsetName(request))
+                                )
                                 .setBodyText(output.toString())
                                 .setContentLength()
                 );
@@ -115,6 +123,21 @@ final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequ
 
         return bodyText;
     }
+
+    /**
+     * Attempts to select the appropriate {@link CharsetName} or dfaults to UTF-8.
+     */
+    private static CharsetName selectCharsetName(final HttpRequest request) {
+        final AcceptCharset acceptCharset = HttpHeaderName.ACCEPT_CHARSET.header(request)
+                .orElse(UTF8);
+        final Optional<Charset> charset = acceptCharset.charset();
+        if (!charset.isPresent()) {
+            throw new NotAcceptableHeaderException("AcceptCharset " + acceptCharset + " contain unsupported charset");
+        }
+        return CharsetName.with(charset.get().name());
+    }
+
+    private final static AcceptCharset UTF8 = AcceptCharset.parse("utf-8");
 
     private static String badRequest(final String message,
                                      final Throwable cause,

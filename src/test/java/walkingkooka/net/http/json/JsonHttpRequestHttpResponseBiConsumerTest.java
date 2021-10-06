@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import walkingkooka.Cast;
 import walkingkooka.ToStringTesting;
 import walkingkooka.net.Url;
+import walkingkooka.net.header.AcceptCharset;
+import walkingkooka.net.header.CharsetName;
 import walkingkooka.net.header.HttpHeaderName;
 import walkingkooka.net.header.MediaType;
 import walkingkooka.net.http.HttpEntity;
@@ -136,7 +138,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
     }
 
     @Test
-    public void testSuccess() {
+    public void testSuccessMissingAcceptCharset() {
         final HttpRequest request = this.request(
                 HttpEntity.EMPTY
                         .setBodyText(INPUT.toString())
@@ -152,7 +154,35 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         expected.setStatus(HttpStatusCode.OK.status());
         expected.addEntity(
                 HttpEntity.EMPTY
-                        .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
+                        .setBodyText(OUTPUT.toString())
+                        .setContentLength()
+        );
+
+        assertEquals(expected, response, () -> "response\n" + request);
+    }
+
+    @Test
+    public void testSuccess() {
+        final CharsetName charsetName = CharsetName.UTF_16;
+
+        final HttpRequest request = this.request(
+                HttpEntity.EMPTY
+                        .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
+                        .setBodyText(INPUT.toString())
+                        .setContentLength()
+        );
+
+        final HttpResponse response = HttpResponses.recording();
+
+        this.createConsumer()
+                .accept(request, response);
+
+        final HttpResponse expected = HttpResponses.recording();
+        expected.setStatus(HttpStatusCode.OK.status());
+        expected.addEntity(
+                HttpEntity.EMPTY
+                        .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(charsetName))
                         .setBodyText(OUTPUT.toString())
                         .setContentLength()
         );

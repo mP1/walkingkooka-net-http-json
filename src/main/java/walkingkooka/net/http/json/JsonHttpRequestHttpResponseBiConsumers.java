@@ -18,6 +18,7 @@
 package walkingkooka.net.http.json;
 
 import walkingkooka.net.header.HttpHeaderName;
+import walkingkooka.net.http.HttpEntity;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.reflect.PublicStaticHelper;
@@ -39,8 +40,9 @@ public final class JsonHttpRequestHttpResponseBiConsumers implements PublicStati
     /**
      * {@see JsonHttpRequestHttpResponseBiConsumer}
      */
-    public static BiConsumer<HttpRequest, HttpResponse> json(final Function<JsonNode, JsonNode> handler) {
-        return JsonHttpRequestHttpResponseBiConsumer.with(handler);
+    public static BiConsumer<HttpRequest, HttpResponse> json(final Function<JsonNode, JsonNode> handler,
+                                                             final Function<HttpEntity, HttpEntity> post) {
+        return JsonHttpRequestHttpResponseBiConsumer.with(handler, post);
     }
 
     /**

@@ -23,6 +23,7 @@ import walkingkooka.ToStringTesting;
 import walkingkooka.net.Url;
 import walkingkooka.net.header.AcceptCharset;
 import walkingkooka.net.header.CharsetName;
+import walkingkooka.net.header.ETag;
 import walkingkooka.net.header.HttpHeaderName;
 import walkingkooka.net.header.MediaType;
 import walkingkooka.net.http.HttpEntity;
@@ -56,9 +57,19 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         return OUTPUT;
     };
 
+    private final static HttpHeaderName<ETag> POST_HEADER_NAME = HttpHeaderName.E_TAG;
+    private final static ETag POST_HEADER_VALUE = ETag.wildcard();
+
+    private final static Function<HttpEntity, HttpEntity> POST = (e) -> e.addHeader(POST_HEADER_NAME, POST_HEADER_VALUE);
+
     @Test
     public void testWithNullHandlerFails() {
-        assertThrows(NullPointerException.class, () -> JsonHttpRequestHttpResponseBiConsumer.with(null));
+        assertThrows(NullPointerException.class, () -> JsonHttpRequestHttpResponseBiConsumer.with(null, POST));
+    }
+
+    @Test
+    public void testWithNullPostFails() {
+        assertThrows(NullPointerException.class, () -> JsonHttpRequestHttpResponseBiConsumer.with(HANDLER, null));
     }
 
     @Test
@@ -155,6 +166,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         expected.addEntity(
                 HttpEntity.EMPTY
                         .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
+                        .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
                         .setBodyText(OUTPUT.toString())
                         .setContentLength()
         );
@@ -183,6 +195,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         expected.addEntity(
                 HttpEntity.EMPTY
                         .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(charsetName))
+                        .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
                         .setBodyText(OUTPUT.toString())
                         .setContentLength()
         );
@@ -191,7 +204,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
     }
 
     private JsonHttpRequestHttpResponseBiConsumer createConsumer() {
-        return JsonHttpRequestHttpResponseBiConsumer.with(HANDLER);
+        return JsonHttpRequestHttpResponseBiConsumer.with(HANDLER, POST);
     }
 
     private HttpRequest request(final HttpEntity entity) {
@@ -214,7 +227,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
 
     @Test
     public void testToString() {
-        this.toStringAndCheck(JsonHttpRequestHttpResponseBiConsumer.with(HANDLER), HANDLER.toString());
+        this.toStringAndCheck(JsonHttpRequestHttpResponseBiConsumer.with(HANDLER, POST), HANDLER + " " + POST);
     }
 
     // ClassTesting.....................................................................................................

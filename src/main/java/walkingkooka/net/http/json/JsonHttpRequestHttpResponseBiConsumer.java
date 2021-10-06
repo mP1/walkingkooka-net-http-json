@@ -39,16 +39,20 @@ import java.util.function.Function;
  */
 final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequest, HttpResponse> {
 
-    static JsonHttpRequestHttpResponseBiConsumer with(final Function<JsonNode, JsonNode> handler) {
+    static JsonHttpRequestHttpResponseBiConsumer with(final Function<JsonNode, JsonNode> handler,
+                                                      final Function<HttpEntity, HttpEntity> post) {
         Objects.requireNonNull(handler, "handler");
+        Objects.requireNonNull(post, "post");
 
-        return new JsonHttpRequestHttpResponseBiConsumer(handler);
+        return new JsonHttpRequestHttpResponseBiConsumer(handler, post);
     }
 
-    private JsonHttpRequestHttpResponseBiConsumer(final Function<JsonNode, JsonNode> handler) {
+    private JsonHttpRequestHttpResponseBiConsumer(final Function<JsonNode, JsonNode> handler,
+                                                  final Function<HttpEntity, HttpEntity> post) {
         super();
 
         this.handler = handler;
+        this.post = post;
     }
 
     @Override
@@ -66,16 +70,18 @@ final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequ
             if (null != json) {
                 final JsonNode output = this.handler.apply(json);
 
-                response.setStatus(HttpStatusCode.OK.status());
                 response.addEntity(
-                        HttpEntity.EMPTY
-                                .addHeader(
-                                        HttpHeaderName.CONTENT_TYPE,
-                                        MediaType.APPLICATION_JSON.setCharset(selectCharsetName(request))
-                                )
-                                .setBodyText(output.toString())
-                                .setContentLength()
+                        this.post.apply(
+                                HttpEntity.EMPTY
+                                        .addHeader(
+                                                HttpHeaderName.CONTENT_TYPE,
+                                                MediaType.APPLICATION_JSON.setCharset(selectCharsetName(request))
+                                        )
+                                        .setBodyText(output.toString())
+                                        .setContentLength()
+                        )
                 );
+                response.setStatus(HttpStatusCode.OK.status());
             }
         }
     }
@@ -157,8 +163,14 @@ final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequ
      */
     private final Function<JsonNode, JsonNode> handler;
 
+    /**
+     * This is called after the JSON response is written providing an opportunity to modify, performing actions
+     * such as adding headers.
+     */
+    private final Function<HttpEntity, HttpEntity> post;
+
     @Override
     public String toString() {
-        return this.handler.toString();
+        return this.handler + " " + this.post;
     }
 }

@@ -21,6 +21,7 @@ import walkingkooka.net.header.HttpHeaderName;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.reflect.PublicStaticHelper;
+import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.marshall.JsonNodeMarshallContext;
 import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
@@ -34,6 +35,13 @@ public final class JsonHttpRequestHttpResponseBiConsumers implements PublicStati
      * for the java object converted to JSON.
      */
     public final static HttpHeaderName<String> X_CONTENT_TYPE_NAME = HttpHeaderName.with("X-Content-Type-Name").stringValues();
+
+    /**
+     * {@see JsonHttpRequestHttpResponseBiConsumer}
+     */
+    public static BiConsumer<HttpRequest, HttpResponse> json(final Function<JsonNode, JsonNode> handler) {
+        return JsonHttpRequestHttpResponseBiConsumer.with(handler);
+    }
 
     /**
      * {@see PostRequestBodyJsonHttpRequestHttpResponseBiConsumer}

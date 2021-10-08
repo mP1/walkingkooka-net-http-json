@@ -23,8 +23,6 @@ import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.reflect.PublicStaticHelper;
 import walkingkooka.tree.json.JsonNode;
-import walkingkooka.tree.json.marshall.JsonNodeMarshallContext;
-import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -43,21 +41,6 @@ public final class JsonHttpRequestHttpResponseBiConsumers implements PublicStati
     public static BiConsumer<HttpRequest, HttpResponse> json(final Function<JsonNode, JsonNode> handler,
                                                              final Function<HttpEntity, HttpEntity> post) {
         return JsonHttpRequestHttpResponseBiConsumer.with(handler, post);
-    }
-
-    /**
-     * {@see PostRequestBodyJsonHttpRequestHttpResponseBiConsumer}
-     */
-    public static <I, O> BiConsumer<HttpRequest, HttpResponse> postRequestBody(final Function<I, O> handler,
-                                                                               final Class<I> inputType,
-                                                                               final Class<O> outputType,
-                                                                               final JsonNodeMarshallContext marshallContext,
-                                                                               final JsonNodeUnmarshallContext unmarshallContext) {
-        return PostRequestBodyJsonHttpRequestHttpResponseBiConsumer.with(handler,
-                inputType,
-                outputType,
-                marshallContext,
-                unmarshallContext);
     }
 
     /**

@@ -17,8 +17,6 @@
 
 package walkingkooka.net.http.json.sample;
 
-import walkingkooka.net.AbsoluteUrl;
-import walkingkooka.net.RelativeUrl;
 import walkingkooka.net.Url;
 import walkingkooka.net.header.CharsetName;
 import walkingkooka.net.header.HttpHeaderName;
@@ -32,11 +30,7 @@ import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.net.http.server.HttpResponses;
-import walkingkooka.tree.expression.ExpressionNumberContexts;
-import walkingkooka.tree.json.marshall.JsonNodeMarshallContext;
-import walkingkooka.tree.json.marshall.JsonNodeMarshallContexts;
-import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContext;
-import walkingkooka.tree.json.marshall.JsonNodeUnmarshallContexts;
+import walkingkooka.tree.json.JsonNode;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -50,22 +44,12 @@ public class Sample {
     }
 
     private static void test() {
-        final RelativeUrl input = Url.parseRelative("/input");
-        final AbsoluteUrl output = Url.parseAbsolute("https://example/output");
-
-        final Function<RelativeUrl, AbsoluteUrl> handler = (i) -> {
-            assertEquals(input, i);
-            return output;
-        };
-
-        final JsonNodeMarshallContext marshallContext = JsonNodeMarshallContexts.basic();
-        final JsonNodeUnmarshallContext unmarshallContext = JsonNodeUnmarshallContexts.basic(ExpressionNumberContexts.fake());
-
-        final BiConsumer<HttpRequest, HttpResponse> consumer = JsonHttpRequestHttpResponseBiConsumers.postRequestBody(handler,
-                RelativeUrl.class,
-                AbsoluteUrl.class,
-                marshallContext,
-                unmarshallContext);
+        final JsonNode in = JsonNode.number(1);
+        final JsonNode out = JsonNode.number(2);
+        final BiConsumer<HttpRequest, HttpResponse> consumer = JsonHttpRequestHttpResponseBiConsumers.json(
+                (json) -> out,
+                Function.identity()
+        );
 
         final HttpRequest request = HttpRequests.post(HttpTransport.UNSECURED,
                 Url.parseRelative("/handler"),
@@ -73,22 +57,19 @@ public class Sample {
                 HttpEntity.EMPTY
                         .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                         .addHeader(HttpHeaderName.ACCEPT, MediaType.APPLICATION_JSON.accept())
-                        .setBodyText(marshallContext.marshall(input)
-                                .toString())
+                        .setBodyText(in.toString())
                         .setContentLength());
 
         final HttpResponse response = HttpResponses.recording();
 
         consumer.accept(request, response);
 
-        final String responseBody = marshallContext.marshall(output).toString();
+        final String responseBody = out.toString();
 
         final HttpResponse expected = HttpResponses.recording();
-        expected.setStatus(HttpStatusCode.OK.setMessage("POST AbsoluteUrl OK"));
-        expected.setVersion(HttpProtocolVersion.VERSION_1_0);
+        expected.setStatus(HttpStatusCode.OK.status());
         expected.addEntity(HttpEntity.EMPTY
                 .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
-                .addHeader(JsonHttpRequestHttpResponseBiConsumers.X_CONTENT_TYPE_NAME, output.getClass().getSimpleName())
                 .setBodyText(responseBody)
                 .setContentLength());
 

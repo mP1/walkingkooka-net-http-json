@@ -203,6 +203,32 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         assertEquals(expected, response, () -> "response\n" + request);
     }
 
+    @Test
+    public void testSuccessNoContent() {
+        final CharsetName charsetName = CharsetName.UTF_16;
+
+        final HttpRequest request = this.request(
+                HttpEntity.EMPTY
+                        .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
+                        .setBodyText(INPUT.toString())
+                        .setContentLength()
+        );
+
+        final HttpResponse response = HttpResponses.recording();
+
+        JsonHttpRequestHttpResponseBiConsumer.with((inputIgnored) -> null, POST)
+                .accept(request, response);
+
+        final HttpResponse expected = HttpResponses.recording();
+        expected.setStatus(HttpStatusCode.NO_CONTENT.status());
+        expected.addEntity(
+                HttpEntity.EMPTY
+                        .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
+        );
+
+        assertEquals(expected, response, () -> "response\n" + request);
+    }
+
     private JsonHttpRequestHttpResponseBiConsumer createConsumer() {
         return JsonHttpRequestHttpResponseBiConsumer.with(HANDLER, POST);
     }

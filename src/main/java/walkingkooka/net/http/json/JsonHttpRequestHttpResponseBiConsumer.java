@@ -69,19 +69,25 @@ final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequ
 
             if (null != json) {
                 final JsonNode output = this.handler.apply(json);
-
+                final boolean noContent = null == output;
                 response.addEntity(
                         this.post.apply(
-                                HttpEntity.EMPTY
-                                        .addHeader(
-                                                HttpHeaderName.CONTENT_TYPE,
-                                                MediaType.APPLICATION_JSON.setCharset(selectCharsetName(request))
-                                        )
-                                        .setBodyText(output.toString())
-                                        .setContentLength()
+                                noContent ?
+                                        HttpEntity.EMPTY :
+                                        HttpEntity.EMPTY
+                                                .addHeader(
+                                                        HttpHeaderName.CONTENT_TYPE,
+                                                        MediaType.APPLICATION_JSON.setCharset(selectCharsetName(request))
+                                                )
+                                                .setBodyText(noContent ? "" : output.toString())
+                                                .setContentLength()
                         )
                 );
-                response.setStatus(HttpStatusCode.OK.status());
+                response.setStatus(
+                        noContent ?
+                                HttpStatusCode.NO_CONTENT.status() :
+                                HttpStatusCode.OK.status()
+                );
             }
         }
     }

@@ -69,25 +69,30 @@ final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequ
 
             if (null != json) {
                 final JsonNode output = this.handler.apply(json);
-                final boolean noContent = null == output;
-                response.addEntity(
-                        this.post.apply(
-                                noContent ?
-                                        HttpEntity.EMPTY :
-                                        HttpEntity.EMPTY
-                                                .addHeader(
-                                                        HttpHeaderName.CONTENT_TYPE,
-                                                        MediaType.APPLICATION_JSON.setCharset(selectCharsetName(request))
-                                                )
-                                                .setBodyText(noContent ? "" : output.toString())
-                                                .setContentLength()
-                        )
-                );
-                response.setStatus(
-                        noContent ?
-                                HttpStatusCode.NO_CONTENT.status() :
-                                HttpStatusCode.OK.status()
-                );
+
+                final HttpStatusCode statusCode;
+                final HttpEntity entity;
+
+                if (null == output) {
+                    statusCode = HttpStatusCode.NO_CONTENT;
+                    entity = HttpEntity.EMPTY;
+                } else {
+                    statusCode = HttpStatusCode.OK;
+                    entity = HttpEntity.EMPTY
+                            .addHeader(
+                                    HttpHeaderName.CONTENT_TYPE,
+                                    MediaType.APPLICATION_JSON.setCharset(
+                                            selectCharsetName(request)
+                                    )
+                            )
+                            .setBodyText(output.toString())
+                            .setContentLength();
+                }
+
+                final HttpEntity post = this.post.apply(entity);
+
+                response.setStatus(statusCode.status());
+                response.addEntity(post);
             }
         }
     }

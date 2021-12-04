@@ -40,8 +40,6 @@ import walkingkooka.tree.json.JsonPropertyName;
 
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToStringTesting<JsonHttpRequestHttpResponseBiConsumer> {
@@ -52,8 +50,8 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
     private final static JsonNode OUTPUT = JsonNode.object()
             .set(JsonPropertyName.with("output"), JsonNode.number(45.75));
 
-    private final static Function<JsonNode, JsonNode> HANDLER = (i) -> {
-        assertEquals(INPUT, i);
+    private final Function<JsonNode, JsonNode> HANDLER = (i) -> {
+        this.checkEquals(INPUT, i);
         return OUTPUT;
     };
 
@@ -87,7 +85,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Required body missing"));
         expected.addEntity(HttpEntity.EMPTY);
 
-        assertEquals(expected, response, () -> "response\n" + request);
+        this.checkEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -106,7 +104,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Content-Length: 100 != body length=2 mismatch"));
         expected.addEntity(HttpEntity.EMPTY);
 
-        assertEquals(expected, response, () -> "response\n" + request);
+        this.checkEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -126,7 +124,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("End of text at (2,1) \"{\" expected [ OBJECT_PROPERTY, [{[ WHITESPACE ], SEPARATOR, OBJECT_PROPERTY_REQUIRED }]], [ WHITESPACE ], OBJECT_END"));
         expected.addEntity(HttpEntity.EMPTY);
 
-        assertEquals(expected, response, () -> "response\n" + request);
+        this.checkEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -145,7 +143,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         expected.setStatus(HttpStatusCode.LENGTH_REQUIRED.status());
         expected.addEntity(HttpEntity.EMPTY);
 
-        assertEquals(expected, response, () -> "response\n" + request);
+        this.checkEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -171,7 +169,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
                         .setContentLength()
         );
 
-        assertEquals(expected, response, () -> "response\n" + request);
+        this.checkEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -200,7 +198,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
                         .setContentLength()
         );
 
-        assertEquals(expected, response, () -> "response\n" + request);
+        this.checkEquals(expected, response, () -> "response\n" + request);
     }
 
     @Test
@@ -226,7 +224,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
                         .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
         );
 
-        assertEquals(expected, response, () -> "response\n" + request);
+        this.checkEquals(expected, response, () -> "response\n" + request);
     }
 
     private JsonHttpRequestHttpResponseBiConsumer createConsumer() {
@@ -239,8 +237,8 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
 
     private HttpRequest request(final HttpMethod method,
                                 final HttpEntity entity) {
-        assertNotEquals(null, method, "method");
-        assertNotEquals(null, entity, "entity");
+        this.checkNotEquals(null, method, "method");
+        this.checkNotEquals(null, entity, "entity");
 
         return HttpRequests.value(
                 method,

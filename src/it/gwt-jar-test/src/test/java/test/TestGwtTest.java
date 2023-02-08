@@ -2,6 +2,7 @@ package test;
 
 import com.google.gwt.junit.client.GWTTestCase;
 
+import walkingkooka.j2cl.locale.LocaleAware;
 import walkingkooka.net.Url;
 import walkingkooka.net.header.CharsetName;
 import walkingkooka.net.header.HttpHeaderName;
@@ -20,6 +21,7 @@ import walkingkooka.tree.json.JsonNode;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+@LocaleAware
 public class TestGwtTest extends GWTTestCase {
 
     @Override

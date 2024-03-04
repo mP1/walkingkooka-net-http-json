@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
+    <inherits name="walkingkooka.net.Net"/>
     <inherits name="walkingkooka.tree.json.Json"/>
     <source path=""/>
 </module>

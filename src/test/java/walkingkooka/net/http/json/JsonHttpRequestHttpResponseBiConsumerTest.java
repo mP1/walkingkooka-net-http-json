@@ -121,7 +121,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
                 .accept(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
-        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("End of text at (2,1) \"{\" expected [ OBJECT_PROPERTY, [{[ WHITESPACE ], SEPARATOR, OBJECT_PROPERTY_REQUIRED }]], [ WHITESPACE ], OBJECT_END"));
+        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Invalid position 1 not between 0 and 1 in \"{\""));
         expected.addEntity(HttpEntity.EMPTY);
 
         this.checkEquals(expected, response, () -> "response\n" + request);

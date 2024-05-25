@@ -11,16 +11,15 @@ import walkingkooka.net.http.HttpEntity;
 import walkingkooka.net.http.HttpProtocolVersion;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.HttpTransport;
-import walkingkooka.net.http.json.JsonHttpRequestHttpResponseBiConsumers;
+import walkingkooka.net.http.json.JsonHttpHandlers;
+import walkingkooka.net.http.server.HttpHandler;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.net.http.server.HttpResponses;
 import walkingkooka.tree.json.JsonNode;
 
-import java.util.function.BiConsumer;
 import java.util.function.Function;
-
 @LocaleAware
 public class TestGwtTest extends GWTTestCase {
 
@@ -39,7 +38,7 @@ public class TestGwtTest extends GWTTestCase {
     public void testSuccessful() throws Exception {
         final JsonNode in = JsonNode.number(1);
         final JsonNode out = JsonNode.number(2);
-        final BiConsumer<HttpRequest, HttpResponse> consumer = JsonHttpRequestHttpResponseBiConsumers.json(
+        final HttpHandler handler = JsonHttpHandlers.json(
                 (json) -> out,
                 Function.identity()
         );
@@ -55,7 +54,7 @@ public class TestGwtTest extends GWTTestCase {
 
         final HttpResponse response = HttpResponses.recording();
 
-        consumer.accept(request, response);
+        handler.handle(request, response);
 
         final String responseBody = out.toString();
 

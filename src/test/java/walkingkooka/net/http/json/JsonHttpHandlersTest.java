@@ -22,11 +22,11 @@ import walkingkooka.reflect.PublicStaticHelperTesting;
 
 import java.lang.reflect.Method;
 
-public final class JsonHttpRequestHttpResponseBiConsumersTest implements PublicStaticHelperTesting<JsonHttpRequestHttpResponseBiConsumers> {
+public final class JsonHttpHandlersTest implements PublicStaticHelperTesting<JsonHttpHandlers> {
 
     @Override
-    public Class<JsonHttpRequestHttpResponseBiConsumers> type() {
-        return JsonHttpRequestHttpResponseBiConsumers.class;
+    public Class<JsonHttpHandlers> type() {
+        return JsonHttpHandlers.class;
     }
 
     @Override

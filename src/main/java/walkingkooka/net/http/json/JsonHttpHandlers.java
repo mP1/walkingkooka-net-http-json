@@ -19,15 +19,13 @@ package walkingkooka.net.http.json;
 
 import walkingkooka.net.header.HttpHeaderName;
 import walkingkooka.net.http.HttpEntity;
-import walkingkooka.net.http.server.HttpRequest;
-import walkingkooka.net.http.server.HttpResponse;
+import walkingkooka.net.http.server.HttpHandler;
 import walkingkooka.reflect.PublicStaticHelper;
 import walkingkooka.tree.json.JsonNode;
 
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public final class JsonHttpRequestHttpResponseBiConsumers implements PublicStaticHelper {
+public final class JsonHttpHandlers implements PublicStaticHelper {
 
     /**
      * This header will appear in any successful JSON response and contains the simple java type name (Class#getSimpleName())
@@ -38,15 +36,15 @@ public final class JsonHttpRequestHttpResponseBiConsumers implements PublicStati
     /**
      * {@see JsonHttpRequestHttpResponseBiConsumer}
      */
-    public static BiConsumer<HttpRequest, HttpResponse> json(final Function<JsonNode, JsonNode> handler,
-                                                             final Function<HttpEntity, HttpEntity> post) {
-        return JsonHttpRequestHttpResponseBiConsumer.with(handler, post);
+    public static HttpHandler json(final Function<JsonNode, JsonNode> handler,
+                                   final Function<HttpEntity, HttpEntity> post) {
+        return JsonHttpHandler.with(handler, post);
     }
 
     /**
      * Stop creation
      */
-    private JsonHttpRequestHttpResponseBiConsumers() {
+    private JsonHttpHandlers() {
         throw new UnsupportedOperationException();
     }
 }

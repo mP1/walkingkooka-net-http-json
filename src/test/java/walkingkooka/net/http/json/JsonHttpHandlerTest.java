@@ -42,7 +42,7 @@ import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToStringTesting<JsonHttpRequestHttpResponseBiConsumer> {
+public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandler> {
 
     private final static JsonNode INPUT = JsonNode.object()
             .set(JsonPropertyName.with("input"), JsonNode.number(123.5));
@@ -62,12 +62,12 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
 
     @Test
     public void testWithNullHandlerFails() {
-        assertThrows(NullPointerException.class, () -> JsonHttpRequestHttpResponseBiConsumer.with(null, POST));
+        assertThrows(NullPointerException.class, () -> JsonHttpHandler.with(null, POST));
     }
 
     @Test
     public void testWithNullPostFails() {
-        assertThrows(NullPointerException.class, () -> JsonHttpRequestHttpResponseBiConsumer.with(HANDLER, null));
+        assertThrows(NullPointerException.class, () -> JsonHttpHandler.with(HANDLER, null));
     }
 
     @Test
@@ -79,7 +79,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         final HttpResponse response = HttpResponses.recording();
 
         this.createConsumer()
-                .accept(request, response);
+                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Required body missing"));
@@ -98,7 +98,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         final HttpResponse response = HttpResponses.recording();
 
         this.createConsumer()
-                .accept(request, response);
+                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Content-Length: 100 != body length=2 mismatch"));
@@ -118,7 +118,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         final HttpResponse response = HttpResponses.recording();
 
         this.createConsumer()
-                .accept(request, response);
+                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Invalid position 1 not between 0 and 1 in \"{\""));
@@ -137,7 +137,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         final HttpResponse response = HttpResponses.recording();
 
         this.createConsumer()
-                .accept(request, response);
+                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.LENGTH_REQUIRED.status());
@@ -157,7 +157,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         final HttpResponse response = HttpResponses.recording();
 
         this.createConsumer()
-                .accept(request, response);
+                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
@@ -186,7 +186,7 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         final HttpResponse response = HttpResponses.recording();
 
         this.createConsumer()
-                .accept(request, response);
+                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
@@ -214,8 +214,8 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
 
         final HttpResponse response = HttpResponses.recording();
 
-        JsonHttpRequestHttpResponseBiConsumer.with((inputIgnored) -> null, POST)
-                .accept(request, response);
+        JsonHttpHandler.with((inputIgnored) -> null, POST)
+                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.NO_CONTENT.status());
@@ -227,8 +227,8 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
         this.checkEquals(expected, response, () -> "response\n" + request);
     }
 
-    private JsonHttpRequestHttpResponseBiConsumer createConsumer() {
-        return JsonHttpRequestHttpResponseBiConsumer.with(HANDLER, POST);
+    private JsonHttpHandler createConsumer() {
+        return JsonHttpHandler.with(HANDLER, POST);
     }
 
     private HttpRequest request(final HttpEntity entity) {
@@ -251,13 +251,13 @@ public final class JsonHttpRequestHttpResponseBiConsumerTest implements ToString
 
     @Test
     public void testToString() {
-        this.toStringAndCheck(JsonHttpRequestHttpResponseBiConsumer.with(HANDLER, POST), HANDLER + " " + POST);
+        this.toStringAndCheck(JsonHttpHandler.with(HANDLER, POST), HANDLER + " " + POST);
     }
 
     // ClassTesting.....................................................................................................
 
     @Override
-    public Class<JsonHttpRequestHttpResponseBiConsumer> type() {
-        return Cast.to(JsonHttpRequestHttpResponseBiConsumer.class);
+    public Class<JsonHttpHandler> type() {
+        return Cast.to(JsonHttpHandler.class);
     }
 }

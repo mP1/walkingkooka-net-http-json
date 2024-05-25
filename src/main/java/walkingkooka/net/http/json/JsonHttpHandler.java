@@ -24,6 +24,7 @@ import walkingkooka.net.header.MediaType;
 import walkingkooka.net.header.NotAcceptableHeaderException;
 import walkingkooka.net.http.HttpEntity;
 import walkingkooka.net.http.HttpStatusCode;
+import walkingkooka.net.http.server.HttpHandler;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.tree.json.JsonNode;
@@ -31,24 +32,23 @@ import walkingkooka.tree.json.JsonNode;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
  * A handler that assumes the request contains json, and after parsing invokes the provided handler.
  */
-final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequest, HttpResponse> {
+final class JsonHttpHandler implements HttpHandler {
 
-    static JsonHttpRequestHttpResponseBiConsumer with(final Function<JsonNode, JsonNode> handler,
-                                                      final Function<HttpEntity, HttpEntity> post) {
+    static JsonHttpHandler with(final Function<JsonNode, JsonNode> handler,
+                                final Function<HttpEntity, HttpEntity> post) {
         Objects.requireNonNull(handler, "handler");
         Objects.requireNonNull(post, "post");
 
-        return new JsonHttpRequestHttpResponseBiConsumer(handler, post);
+        return new JsonHttpHandler(handler, post);
     }
 
-    private JsonHttpRequestHttpResponseBiConsumer(final Function<JsonNode, JsonNode> handler,
-                                                  final Function<HttpEntity, HttpEntity> post) {
+    private JsonHttpHandler(final Function<JsonNode, JsonNode> handler,
+                            final Function<HttpEntity, HttpEntity> post) {
         super();
 
         this.handler = handler;
@@ -56,7 +56,8 @@ final class JsonHttpRequestHttpResponseBiConsumer implements BiConsumer<HttpRequ
     }
 
     @Override
-    public void accept(final HttpRequest request, final HttpResponse response) {
+    public void handle(final HttpRequest request,
+                       final HttpResponse response) {
         final String body = resourceTextOrBadRequest(request, response);
         if (null != body) {
             JsonNode json = null;

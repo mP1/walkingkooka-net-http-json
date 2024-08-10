@@ -52,7 +52,7 @@ public class JunitTest {
                 Url.parseRelative("/handler"),
                 HttpProtocolVersion.VERSION_1_0,
                 HttpEntity.EMPTY
-                        .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .setContentType(MediaType.APPLICATION_JSON)
                         .addHeader(HttpHeaderName.ACCEPT, MediaType.APPLICATION_JSON.accept())
                         .setBodyText(in.toString())
                         .setContentLength());
@@ -66,7 +66,7 @@ public class JunitTest {
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
         expected.addEntity(HttpEntity.EMPTY
-                .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
+                .setContentType(MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
                 .setBodyText(responseBody)
                 .setContentLength());
 

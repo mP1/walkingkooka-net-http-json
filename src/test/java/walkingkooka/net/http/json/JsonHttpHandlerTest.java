@@ -91,7 +91,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
     @Test
     public void testInvalidContentLengthFails() {
         final HttpRequest request = this.request(HttpEntity.EMPTY
-                .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .setContentType(MediaType.APPLICATION_JSON)
                 .addHeader(HttpHeaderName.CONTENT_LENGTH, 100L)
                 .setBodyText("{}"));
 
@@ -163,7 +163,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
         expected.setStatus(HttpStatusCode.OK.status());
         expected.addEntity(
                 HttpEntity.EMPTY
-                        .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
+                        .setContentType(MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
                         .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
                         .setBodyText(OUTPUT.toString())
                         .setContentLength()
@@ -192,7 +192,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
         expected.setStatus(HttpStatusCode.OK.status());
         expected.addEntity(
                 HttpEntity.EMPTY
-                        .addHeader(HttpHeaderName.CONTENT_TYPE, MediaType.APPLICATION_JSON.setCharset(charsetName))
+                        .setContentType(MediaType.APPLICATION_JSON.setCharset(charsetName))
                         .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
                         .setBodyText(OUTPUT.toString())
                         .setContentLength()

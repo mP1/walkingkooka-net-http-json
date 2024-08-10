@@ -80,13 +80,11 @@ final class JsonHttpHandler implements HttpHandler {
                 } else {
                     statusCode = HttpStatusCode.OK;
                     entity = HttpEntity.EMPTY
-                            .addHeader(
-                                    HttpHeaderName.CONTENT_TYPE,
+                            .setContentType(
                                     MediaType.APPLICATION_JSON.setCharset(
                                             selectCharsetName(request)
                                     )
-                            )
-                            .setBodyText(output.toString())
+                            ).setBodyText(output.toString())
                             .setContentLength();
                 }
 

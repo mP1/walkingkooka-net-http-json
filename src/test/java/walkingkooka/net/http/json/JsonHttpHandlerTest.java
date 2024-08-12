@@ -83,7 +83,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Required body missing"));
-        expected.addEntity(HttpEntity.EMPTY);
+        expected.setEntity(HttpEntity.EMPTY);
 
         this.checkEquals(expected, response, () -> "response\n" + request);
     }
@@ -102,7 +102,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Content-Length: 100 != body length=2 mismatch"));
-        expected.addEntity(HttpEntity.EMPTY);
+        expected.setEntity(HttpEntity.EMPTY);
 
         this.checkEquals(expected, response, () -> "response\n" + request);
     }
@@ -122,7 +122,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Invalid position 1 not between 0 and 1 in \"{\""));
-        expected.addEntity(HttpEntity.EMPTY);
+        expected.setEntity(HttpEntity.EMPTY);
 
         this.checkEquals(expected, response, () -> "response\n" + request);
     }
@@ -141,7 +141,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.LENGTH_REQUIRED.status());
-        expected.addEntity(HttpEntity.EMPTY);
+        expected.setEntity(HttpEntity.EMPTY);
 
         this.checkEquals(expected, response, () -> "response\n" + request);
     }
@@ -161,7 +161,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
-        expected.addEntity(
+        expected.setEntity(
                 HttpEntity.EMPTY
                         .setContentType(MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
                         .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
@@ -190,7 +190,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
-        expected.addEntity(
+        expected.setEntity(
                 HttpEntity.EMPTY
                         .setContentType(MediaType.APPLICATION_JSON.setCharset(charsetName))
                         .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
@@ -219,7 +219,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.NO_CONTENT.status());
-        expected.addEntity(
+        expected.setEntity(
                 HttpEntity.EMPTY
                         .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
         );

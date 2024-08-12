@@ -65,7 +65,7 @@ public class JunitTest {
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
-        expected.addEntity(HttpEntity.EMPTY
+        expected.setEntity(HttpEntity.EMPTY
                 .setContentType(MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
                 .setBodyText(responseBody)
                 .setContentLength());

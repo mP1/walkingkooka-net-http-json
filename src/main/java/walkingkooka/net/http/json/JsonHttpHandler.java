@@ -65,7 +65,7 @@ final class JsonHttpHandler implements HttpHandler {
                 json = JsonNode.parse(body);
             } catch (final Exception parseFail) {
                 response.setStatus(HttpStatusCode.BAD_REQUEST.setMessage(parseFail.getMessage()));
-                response.addEntity(HttpEntity.EMPTY);
+                response.setEntity(HttpEntity.EMPTY);
             }
 
             if (null != json) {
@@ -91,7 +91,7 @@ final class JsonHttpHandler implements HttpHandler {
                 final HttpEntity post = this.post.apply(entity);
 
                 response.setStatus(statusCode.status());
-                response.addEntity(post);
+                response.setEntity(post);
             }
         }
     }
@@ -122,7 +122,7 @@ final class JsonHttpHandler implements HttpHandler {
             } else {
                 if (null == contentLength) {
                     response.setStatus(HttpStatusCode.LENGTH_REQUIRED.status());
-                    response.addEntity(HttpEntity.EMPTY);
+                    response.setEntity(HttpEntity.EMPTY);
                     bodyText = null;
                 } else {
                     final long bodyLength = request.bodyLength();
@@ -159,7 +159,7 @@ final class JsonHttpHandler implements HttpHandler {
                                      final Throwable cause,
                                      final HttpResponse response) {
         response.setStatus(HttpStatusCode.BAD_REQUEST.setMessage(message));
-        response.addEntity(null != cause ? HttpEntity.dumpStackTrace(cause) : HttpEntity.EMPTY);
+        response.setEntity(null != cause ? HttpEntity.dumpStackTrace(cause) : HttpEntity.EMPTY);
         return null;
     }
 

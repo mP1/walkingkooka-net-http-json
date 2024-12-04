@@ -31,10 +31,12 @@ import walkingkooka.net.http.HttpMethod;
 import walkingkooka.net.http.HttpProtocolVersion;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.HttpTransport;
+import walkingkooka.net.http.server.HttpHandlerTesting;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.net.http.server.HttpResponses;
+import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
 
@@ -42,7 +44,8 @@ import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandler> {
+public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHandler>,
+        ToStringTesting<JsonHttpHandler> {
 
     private final static JsonNode INPUT = JsonNode.object()
             .set(JsonPropertyName.with("input"), JsonNode.number(123.5));
@@ -62,103 +65,84 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
 
     @Test
     public void testWithNullHandlerFails() {
-        assertThrows(NullPointerException.class, () -> JsonHttpHandler.with(null, POST));
+        assertThrows(
+                NullPointerException.class,
+                () -> JsonHttpHandler.with(null, POST)
+        );
     }
 
     @Test
     public void testWithNullPostFails() {
-        assertThrows(NullPointerException.class, () -> JsonHttpHandler.with(HANDLER, null));
+        assertThrows(
+                NullPointerException.class,
+                () -> JsonHttpHandler.with(HANDLER, null)
+        );
     }
 
+    // handle...........................................................................................................
+
     @Test
-    public void testMissingRequestBodyFails() {
-        final HttpRequest request = this.request(HttpEntity.EMPTY
-                .setBodyText("")
-                .setContentLength());
-
-        final HttpResponse response = HttpResponses.recording();
-
-        this.createConsumer()
-                .handle(request, response);
-
+    public void testHandleMissingRequestBodyFails() {
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Required body missing"));
         expected.setEntity(HttpEntity.EMPTY);
 
-        this.checkEquals(expected, response, () -> "response\n" + request);
+        this.handleAndCheck(
+                this.request(HttpEntity.EMPTY
+                        .setBodyText("")
+                        .setContentLength()),
+                expected
+        );
     }
 
     @Test
-    public void testInvalidContentLengthFails() {
-        final HttpRequest request = this.request(HttpEntity.EMPTY
-                .setContentType(MediaType.APPLICATION_JSON)
-                .addHeader(HttpHeaderName.CONTENT_LENGTH, 100L)
-                .setBodyText("{}"));
-
-        final HttpResponse response = HttpResponses.recording();
-
-        this.createConsumer()
-                .handle(request, response);
-
+    public void testHandleInvalidContentLengthFails() {
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Content-Length: 100 != body length=2 mismatch"));
         expected.setEntity(HttpEntity.EMPTY);
 
-        this.checkEquals(expected, response, () -> "response\n" + request);
+        this.handleAndCheck(
+                this.request(HttpEntity.EMPTY
+                        .setContentType(MediaType.APPLICATION_JSON)
+                        .addHeader(HttpHeaderName.CONTENT_LENGTH, 100L)
+                        .setBodyText("{}")),
+                expected
+        );
     }
 
     @Test
-    public void testInvalidRequestBodyFails() {
-        final HttpRequest request = this.request(
-                HttpEntity.EMPTY
-                        .setBodyText("{")
-                        .setContentLength()
-        );
-
-        final HttpResponse response = HttpResponses.recording();
-
-        this.createConsumer()
-                .handle(request, response);
-
+    public void testHandleInvalidRequestBodyFails() {
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Invalid character '{' at 0 in \"{\""));
         expected.setEntity(HttpEntity.EMPTY);
 
-        this.checkEquals(expected, response, () -> "response\n" + request);
+        this.handleAndCheck(
+                this.request(
+                        HttpEntity.EMPTY
+                                .setBodyText("{")
+                                .setContentLength()
+                ),
+                expected
+        );
     }
 
     @Test
-    public void testContentLengthMissingFails() {
-        final HttpRequest request = this.request(
-                HttpEntity.EMPTY
-                        .setBodyText("{")
-        );
-
-        final HttpResponse response = HttpResponses.recording();
-
-        this.createConsumer()
-                .handle(request, response);
-
+    public void testHandleContentLengthMissingFails() {
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.LENGTH_REQUIRED.status());
         expected.setEntity(HttpEntity.EMPTY);
 
-        this.checkEquals(expected, response, () -> "response\n" + request);
+        this.handleAndCheck(
+                this.request(
+                        HttpEntity.EMPTY
+                                .setBodyText("{")
+                ),
+                expected
+        );
     }
 
     @Test
-    public void testSuccessMissingAcceptCharset() {
-        final HttpRequest request = this.request(
-                HttpEntity.EMPTY
-                        .setBodyText(INPUT.toString())
-                        .setContentLength()
-        );
-
-        final HttpResponse response = HttpResponses.recording();
-
-        this.createConsumer()
-                .handle(request, response);
-
+    public void testHandleSuccessMissingAcceptCharset() {
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
         expected.setEntity(
@@ -169,24 +153,19 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
                         .setContentLength()
         );
 
-        this.checkEquals(expected, response, () -> "response\n" + request);
+        this.handleAndCheck(
+                this.request(
+                        HttpEntity.EMPTY
+                                .setBodyText(INPUT.toString())
+                                .setContentLength()
+                ),
+                expected
+        );
     }
 
     @Test
-    public void testSuccess() {
+    public void testHandleSuccess() {
         final CharsetName charsetName = CharsetName.UTF_16;
-
-        final HttpRequest request = this.request(
-                HttpEntity.EMPTY
-                        .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
-                        .setBodyText(INPUT.toString())
-                        .setContentLength()
-        );
-
-        final HttpResponse response = HttpResponses.recording();
-
-        this.createConsumer()
-                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
@@ -198,24 +177,20 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
                         .setContentLength()
         );
 
-        this.checkEquals(expected, response, () -> "response\n" + request);
+        this.handleAndCheck(
+                this.request(
+                        HttpEntity.EMPTY
+                                .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
+                                .setBodyText(INPUT.toString())
+                                .setContentLength()
+                ),
+                expected
+        );
     }
 
     @Test
-    public void testSuccessNoContent() {
+    public void testHandleSuccessNoContent() {
         final CharsetName charsetName = CharsetName.UTF_16;
-
-        final HttpRequest request = this.request(
-                HttpEntity.EMPTY
-                        .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
-                        .setBodyText(INPUT.toString())
-                        .setContentLength()
-        );
-
-        final HttpResponse response = HttpResponses.recording();
-
-        JsonHttpHandler.with((inputIgnored) -> null, POST)
-                .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.NO_CONTENT.status());
@@ -224,10 +199,20 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
                         .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
         );
 
-        this.checkEquals(expected, response, () -> "response\n" + request);
+        this.handleAndCheck(
+                JsonHttpHandler.with((inputIgnored) -> null, POST),
+                this.request(
+                        HttpEntity.EMPTY
+                                .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
+                                .setBodyText(INPUT.toString())
+                                .setContentLength()
+                ),
+                expected
+        );
     }
 
-    private JsonHttpHandler createConsumer() {
+    @Override
+    public JsonHttpHandler createHttpHandler() {
         return JsonHttpHandler.with(HANDLER, POST);
     }
 
@@ -249,6 +234,8 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
         );
     }
 
+    // toString.........................................................................................................
+
     @Test
     public void testToString() {
         this.toStringAndCheck(JsonHttpHandler.with(HANDLER, POST), HANDLER + " " + POST);
@@ -259,5 +246,10 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
     @Override
     public Class<JsonHttpHandler> type() {
         return Cast.to(JsonHttpHandler.class);
+    }
+
+    @Override
+    public JavaVisibility typeVisibility() {
+        return JavaVisibility.PACKAGE_PRIVATE;
     }
 }

@@ -121,7 +121,7 @@ public final class JsonHttpHandlerTest implements ToStringTesting<JsonHttpHandle
                 .handle(request, response);
 
         final HttpResponse expected = HttpResponses.recording();
-        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Invalid position 1 not between 0 and 1 in \"{\""));
+        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Invalid character '{' at 0 in \"{\""));
         expected.setEntity(HttpEntity.EMPTY);
 
         this.checkEquals(expected, response, () -> "response\n" + request);

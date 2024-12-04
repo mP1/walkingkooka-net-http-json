@@ -58,6 +58,9 @@ final class JsonHttpHandler implements HttpHandler {
     @Override
     public void handle(final HttpRequest request,
                        final HttpResponse response) {
+        Objects.requireNonNull(request, "request");
+        Objects.requireNonNull(response, "response");
+
         final String body = resourceTextOrBadRequest(request, response);
         if (null != body) {
             JsonNode json = null;

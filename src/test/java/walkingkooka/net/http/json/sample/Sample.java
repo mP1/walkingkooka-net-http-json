@@ -47,18 +47,18 @@ public class Sample {
         final JsonNode in = JsonNode.number(1);
         final JsonNode out = JsonNode.number(2);
         final HttpHandler handler = JsonHttpHandlers.json(
-                (json) -> out,
-                Function.identity()
+            (json) -> out,
+            Function.identity()
         );
 
         final HttpRequest request = HttpRequests.post(HttpTransport.UNSECURED,
-                Url.parseRelative("/handler"),
-                HttpProtocolVersion.VERSION_1_0,
-                HttpEntity.EMPTY
-                        .setContentType(MediaType.APPLICATION_JSON)
-                        .addHeader(HttpHeaderName.ACCEPT, MediaType.APPLICATION_JSON.accept())
-                        .setBodyText(in.toString())
-                        .setContentLength());
+            Url.parseRelative("/handler"),
+            HttpProtocolVersion.VERSION_1_0,
+            HttpEntity.EMPTY
+                .setContentType(MediaType.APPLICATION_JSON)
+                .addHeader(HttpHeaderName.ACCEPT, MediaType.APPLICATION_JSON.accept())
+                .setBodyText(in.toString())
+                .setContentLength());
 
         final HttpResponse response = HttpResponses.recording();
 
@@ -69,10 +69,10 @@ public class Sample {
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
         expected.setEntity(
-                HttpEntity.EMPTY
-                        .setContentType(MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
-                        .setBodyText(responseBody)
-                        .setContentLength()
+            HttpEntity.EMPTY
+                .setContentType(MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
+                .setBodyText(responseBody)
+                .setContentLength()
         );
 
         assertEquals(expected, response, "response");

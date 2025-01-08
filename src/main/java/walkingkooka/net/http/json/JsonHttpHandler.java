@@ -83,12 +83,12 @@ final class JsonHttpHandler implements HttpHandler {
                 } else {
                     statusCode = HttpStatusCode.OK;
                     entity = HttpEntity.EMPTY
-                            .setContentType(
-                                    MediaType.APPLICATION_JSON.setCharset(
-                                            selectCharsetName(request)
-                                    )
-                            ).setBodyText(output.toString())
-                            .setContentLength();
+                        .setContentType(
+                            MediaType.APPLICATION_JSON.setCharset(
+                                selectCharsetName(request)
+                            )
+                        ).setBodyText(output.toString())
+                        .setContentLength();
                 }
 
                 final HttpEntity post = this.post.apply(entity);
@@ -108,9 +108,9 @@ final class JsonHttpHandler implements HttpHandler {
             bodyText = request.bodyText();
         } catch (final RuntimeException cause) {
             bodyText = badRequest(
-                    "Invalid content: " + cause.getMessage(),
-                    cause,
-                    response
+                "Invalid content: " + cause.getMessage(),
+                cause,
+                response
             );
         }
 
@@ -118,8 +118,8 @@ final class JsonHttpHandler implements HttpHandler {
             final Long contentLength = HttpHeaderName.CONTENT_LENGTH.header(request).orElse(null);
             if (bodyText.isEmpty()) {
                 bodyText = badRequest(
-                        "Required body missing",
-                        response
+                    "Required body missing",
+                    response
                 );
 
             } else {
@@ -132,8 +132,8 @@ final class JsonHttpHandler implements HttpHandler {
                     final long contentLengthLong = contentLength.longValue();
                     if (bodyLength != contentLengthLong) {
                         bodyText = badRequest(
-                                HttpHeaderName.CONTENT_LENGTH + ": " + contentLengthLong + " != body length=" + bodyLength + " mismatch",
-                                response
+                            HttpHeaderName.CONTENT_LENGTH + ": " + contentLengthLong + " != body length=" + bodyLength + " mismatch",
+                            response
                         );
                     }
                 }
@@ -148,7 +148,7 @@ final class JsonHttpHandler implements HttpHandler {
      */
     private static CharsetName selectCharsetName(final HttpRequest request) {
         final AcceptCharset acceptCharset = HttpHeaderName.ACCEPT_CHARSET.header(request)
-                .orElse(UTF8);
+            .orElse(UTF8);
         final Optional<Charset> charset = acceptCharset.charset();
         if (!charset.isPresent()) {
             throw new NotAcceptableHeaderException("AcceptCharset " + acceptCharset + " contain unsupported charset");

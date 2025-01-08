@@ -45,13 +45,13 @@ import java.util.function.Function;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHandler>,
-        ToStringTesting<JsonHttpHandler> {
+    ToStringTesting<JsonHttpHandler> {
 
     private final static JsonNode INPUT = JsonNode.object()
-            .set(JsonPropertyName.with("input"), JsonNode.number(123.5));
+        .set(JsonPropertyName.with("input"), JsonNode.number(123.5));
 
     private final static JsonNode OUTPUT = JsonNode.object()
-            .set(JsonPropertyName.with("output"), JsonNode.number(45.75));
+        .set(JsonPropertyName.with("output"), JsonNode.number(45.75));
 
     private final Function<JsonNode, JsonNode> HANDLER = (i) -> {
         this.checkEquals(INPUT, i);
@@ -66,16 +66,16 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     @Test
     public void testWithNullHandlerFails() {
         assertThrows(
-                NullPointerException.class,
-                () -> JsonHttpHandler.with(null, POST)
+            NullPointerException.class,
+            () -> JsonHttpHandler.with(null, POST)
         );
     }
 
     @Test
     public void testWithNullPostFails() {
         assertThrows(
-                NullPointerException.class,
-                () -> JsonHttpHandler.with(HANDLER, null)
+            NullPointerException.class,
+            () -> JsonHttpHandler.with(HANDLER, null)
         );
     }
 
@@ -88,10 +88,10 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         expected.setEntity(HttpEntity.EMPTY);
 
         this.handleAndCheck(
-                this.request(HttpEntity.EMPTY
-                        .setBodyText("")
-                        .setContentLength()),
-                expected
+            this.request(HttpEntity.EMPTY
+                .setBodyText("")
+                .setContentLength()),
+            expected
         );
     }
 
@@ -102,11 +102,11 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         expected.setEntity(HttpEntity.EMPTY);
 
         this.handleAndCheck(
-                this.request(HttpEntity.EMPTY
-                        .setContentType(MediaType.APPLICATION_JSON)
-                        .addHeader(HttpHeaderName.CONTENT_LENGTH, 100L)
-                        .setBodyText("{}")),
-                expected
+            this.request(HttpEntity.EMPTY
+                .setContentType(MediaType.APPLICATION_JSON)
+                .addHeader(HttpHeaderName.CONTENT_LENGTH, 100L)
+                .setBodyText("{}")),
+            expected
         );
     }
 
@@ -117,12 +117,12 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         expected.setEntity(HttpEntity.EMPTY);
 
         this.handleAndCheck(
-                this.request(
-                        HttpEntity.EMPTY
-                                .setBodyText("{")
-                                .setContentLength()
-                ),
-                expected
+            this.request(
+                HttpEntity.EMPTY
+                    .setBodyText("{")
+                    .setContentLength()
+            ),
+            expected
         );
     }
 
@@ -133,11 +133,11 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         expected.setEntity(HttpEntity.EMPTY);
 
         this.handleAndCheck(
-                this.request(
-                        HttpEntity.EMPTY
-                                .setBodyText("{")
-                ),
-                expected
+            this.request(
+                HttpEntity.EMPTY
+                    .setBodyText("{")
+            ),
+            expected
         );
     }
 
@@ -146,20 +146,20 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
         expected.setEntity(
-                HttpEntity.EMPTY
-                        .setContentType(MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
-                        .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
-                        .setBodyText(OUTPUT.toString())
-                        .setContentLength()
+            HttpEntity.EMPTY
+                .setContentType(MediaType.APPLICATION_JSON.setCharset(CharsetName.UTF_8))
+                .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
+                .setBodyText(OUTPUT.toString())
+                .setContentLength()
         );
 
         this.handleAndCheck(
-                this.request(
-                        HttpEntity.EMPTY
-                                .setBodyText(INPUT.toString())
-                                .setContentLength()
-                ),
-                expected
+            this.request(
+                HttpEntity.EMPTY
+                    .setBodyText(INPUT.toString())
+                    .setContentLength()
+            ),
+            expected
         );
     }
 
@@ -170,21 +170,21 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.OK.status());
         expected.setEntity(
-                HttpEntity.EMPTY
-                        .setContentType(MediaType.APPLICATION_JSON.setCharset(charsetName))
-                        .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
-                        .setBodyText(OUTPUT.toString())
-                        .setContentLength()
+            HttpEntity.EMPTY
+                .setContentType(MediaType.APPLICATION_JSON.setCharset(charsetName))
+                .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
+                .setBodyText(OUTPUT.toString())
+                .setContentLength()
         );
 
         this.handleAndCheck(
-                this.request(
-                        HttpEntity.EMPTY
-                                .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
-                                .setBodyText(INPUT.toString())
-                                .setContentLength()
-                ),
-                expected
+            this.request(
+                HttpEntity.EMPTY
+                    .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
+                    .setBodyText(INPUT.toString())
+                    .setContentLength()
+            ),
+            expected
         );
     }
 
@@ -195,19 +195,19 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         final HttpResponse expected = HttpResponses.recording();
         expected.setStatus(HttpStatusCode.NO_CONTENT.status());
         expected.setEntity(
-                HttpEntity.EMPTY
-                        .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
+            HttpEntity.EMPTY
+                .addHeader(POST_HEADER_NAME, POST_HEADER_VALUE)
         );
 
         this.handleAndCheck(
-                JsonHttpHandler.with((inputIgnored) -> null, POST),
-                this.request(
-                        HttpEntity.EMPTY
-                                .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
-                                .setBodyText(INPUT.toString())
-                                .setContentLength()
-                ),
-                expected
+            JsonHttpHandler.with((inputIgnored) -> null, POST),
+            this.request(
+                HttpEntity.EMPTY
+                    .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
+                    .setBodyText(INPUT.toString())
+                    .setContentLength()
+            ),
+            expected
         );
     }
 
@@ -226,11 +226,11 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         this.checkNotEquals(null, entity, "entity");
 
         return HttpRequests.value(
-                method,
-                HttpTransport.UNSECURED,
-                Url.parseRelative("/handler"),
-                HttpProtocolVersion.VERSION_1_0,
-                entity
+            method,
+            HttpTransport.UNSECURED,
+            Url.parseRelative("/handler"),
+            HttpProtocolVersion.VERSION_1_0,
+            entity
         );
     }
 

@@ -113,7 +113,7 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     @Test
     public void testHandleInvalidRequestBodyFails() {
         final HttpResponse expected = HttpResponses.recording();
-        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Invalid character '{' at 0 in \"{\""));
+        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Invalid character '{' at 0"));
         expected.setEntity(HttpEntity.EMPTY);
 
         this.handleAndCheck(

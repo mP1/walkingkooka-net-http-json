@@ -226,8 +226,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         this.checkNotEquals(null, entity, "entity");
 
         return HttpRequests.value(
-            method,
             HttpTransport.UNSECURED,
+            method,
             Url.parseRelative("/handler"),
             HttpProtocolVersion.VERSION_1_0,
             entity

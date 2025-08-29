@@ -113,7 +113,7 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     @Test
     public void testHandleInvalidRequestBodyFails() {
         final HttpResponse expected = HttpResponses.recording();
-        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("End of text at (2,1) expected [OBJECT_PROPERTY, {[WHITESPACE], \",\", OBJECT_PROPERTY_REQUIRED}], [WHITESPACE], \"}\""));
+        expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("End of text, expected [OBJECT_PROPERTY, {[WHITESPACE], \",\", OBJECT_PROPERTY_REQUIRED}], [WHITESPACE], \"}\""));
         expected.setEntity(HttpEntity.EMPTY);
 
         this.handleAndCheck(

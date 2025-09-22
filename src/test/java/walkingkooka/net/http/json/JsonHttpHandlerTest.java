@@ -48,10 +48,16 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     ToStringTesting<JsonHttpHandler> {
 
     private final static JsonNode INPUT = JsonNode.object()
-        .set(JsonPropertyName.with("input"), JsonNode.number(123.5));
+        .set(
+            JsonPropertyName.with("input"),
+            123.5
+        );
 
     private final static JsonNode OUTPUT = JsonNode.object()
-        .set(JsonPropertyName.with("output"), JsonNode.number(45.75));
+        .set(
+            JsonPropertyName.with("output"),
+            45.75
+        );
 
     private final Function<JsonNode, JsonNode> HANDLER = (i) -> {
         this.checkEquals(INPUT, i);

@@ -101,6 +101,12 @@
             <artifactId>walkingkooka-net</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>walkingkooka</groupId>
+            <artifactId>walkingkooka-tree-json</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

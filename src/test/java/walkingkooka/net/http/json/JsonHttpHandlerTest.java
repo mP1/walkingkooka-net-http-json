@@ -186,8 +186,12 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         this.handleAndCheck(
             this.request(
                 HttpEntity.EMPTY
-                    .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
-                    .setBodyText(INPUT.toString())
+                    .addHeader(
+                        HttpHeaderName.ACCEPT_CHARSET,
+                        AcceptCharset.parse(
+                            charsetName.text()
+                        )
+                    ).setBodyText(INPUT.toString())
                     .setContentLength()
             ),
             expected
@@ -209,8 +213,12 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
             JsonHttpHandler.with((inputIgnored) -> null, POST),
             this.request(
                 HttpEntity.EMPTY
-                    .addHeader(HttpHeaderName.ACCEPT_CHARSET, AcceptCharset.parse(charsetName.toHeaderText()))
-                    .setBodyText(INPUT.toString())
+                    .addHeader(
+                        HttpHeaderName.ACCEPT_CHARSET,
+                        AcceptCharset.parse(
+                            charsetName.text()
+                        )
+                    ).setBodyText(INPUT.toString())
                     .setContentLength()
             ),
             expected

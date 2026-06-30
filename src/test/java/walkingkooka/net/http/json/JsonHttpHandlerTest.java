@@ -31,6 +31,7 @@ import walkingkooka.net.http.HttpMethod;
 import walkingkooka.net.http.HttpProtocolVersion;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.HttpTransport;
+import walkingkooka.net.http.server.FakeHttpHandlerContext;
 import walkingkooka.net.http.server.HttpHandlerTesting;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
@@ -44,8 +45,8 @@ import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHandler>,
-    ToStringTesting<JsonHttpHandler> {
+public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHandler<FakeHttpHandlerContext>, FakeHttpHandlerContext>,
+    ToStringTesting<JsonHttpHandler<FakeHttpHandlerContext>> {
 
     private final static JsonNode INPUT = JsonNode.object()
         .set(
@@ -221,12 +222,13 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
                     ).setBodyText(INPUT.toString())
                     .setContentLength()
             ),
+            new FakeHttpHandlerContext(),
             expected
         );
     }
 
     @Override
-    public JsonHttpHandler createHttpHandler() {
+    public JsonHttpHandler<FakeHttpHandlerContext> createHttpHandler() {
         return JsonHttpHandler.with(HANDLER, POST);
     }
 
@@ -248,6 +250,11 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         );
     }
 
+    @Override
+    public FakeHttpHandlerContext createContext() {
+        return new FakeHttpHandlerContext();
+    }
+
     // toString.........................................................................................................
 
     @Test
@@ -258,7 +265,7 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     // ClassTesting.....................................................................................................
 
     @Override
-    public Class<JsonHttpHandler> type() {
+    public Class<JsonHttpHandler<FakeHttpHandlerContext>> type() {
         return Cast.to(JsonHttpHandler.class);
     }
 

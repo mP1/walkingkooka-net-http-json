@@ -28,6 +28,7 @@ import walkingkooka.net.http.HttpProtocolVersion;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.HttpTransport;
 import walkingkooka.net.http.json.JsonHttpHandlers;
+import walkingkooka.net.http.server.FakeHttpHandlerContext;
 import walkingkooka.net.http.server.HttpHandler;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
@@ -60,7 +61,11 @@ public class JunitTest {
 
         final HttpResponse response = HttpResponses.recording();
 
-        handler.handle(request, response);
+        handler.handle(
+            request,
+            response,
+            new FakeHttpHandlerContext()
+        );
 
         final String responseBody = out.toString();
 

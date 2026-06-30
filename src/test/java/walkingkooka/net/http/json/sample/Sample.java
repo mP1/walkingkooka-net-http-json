@@ -26,6 +26,7 @@ import walkingkooka.net.http.HttpProtocolVersion;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.HttpTransport;
 import walkingkooka.net.http.json.JsonHttpHandlers;
+import walkingkooka.net.http.server.FakeHttpHandlerContext;
 import walkingkooka.net.http.server.HttpHandler;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
@@ -46,7 +47,7 @@ public class Sample {
     private static void test() {
         final JsonNode in = JsonNode.number(1);
         final JsonNode out = JsonNode.number(2);
-        final HttpHandler handler = JsonHttpHandlers.json(
+        final HttpHandler<FakeHttpHandlerContext> handler = JsonHttpHandlers.json(
             (json) -> out,
             Function.identity()
         );
@@ -62,7 +63,11 @@ public class Sample {
 
         final HttpResponse response = HttpResponses.recording();
 
-        handler.handle(request, response);
+        handler.handle(
+            request,
+            response,
+            new FakeHttpHandlerContext()
+        );
 
         final String responseBody = out.toString();
 

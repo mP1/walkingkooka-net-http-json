@@ -25,6 +25,7 @@ import walkingkooka.net.header.NotAcceptableHeaderException;
 import walkingkooka.net.http.HttpEntity;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.server.HttpHandler;
+import walkingkooka.net.http.server.HttpHandlerContext;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.tree.json.JsonNode;
@@ -37,14 +38,14 @@ import java.util.function.Function;
 /**
  * A handler that assumes the request contains json, and after parsing invokes the provided handler.
  */
-final class JsonHttpHandler implements HttpHandler {
+final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler<C> {
 
-    static JsonHttpHandler with(final Function<JsonNode, JsonNode> handler,
-                                final Function<HttpEntity, HttpEntity> post) {
+    static <C extends HttpHandlerContext> JsonHttpHandler<C> with(final Function<JsonNode, JsonNode> handler,
+                                                                  final Function<HttpEntity, HttpEntity> post) {
         Objects.requireNonNull(handler, "handler");
         Objects.requireNonNull(post, "post");
 
-        return new JsonHttpHandler(handler, post);
+        return new JsonHttpHandler<>(handler, post);
     }
 
     private JsonHttpHandler(final Function<JsonNode, JsonNode> handler,
@@ -57,9 +58,11 @@ final class JsonHttpHandler implements HttpHandler {
 
     @Override
     public void handle(final HttpRequest request,
-                       final HttpResponse response) {
+                       final HttpResponse response,
+                       final C context) {
         Objects.requireNonNull(request, "request");
         Objects.requireNonNull(response, "response");
+        Objects.requireNonNull(context, "context");
 
         final String body = resourceTextOrBadRequest(request, response);
         if (null != body) {

@@ -20,6 +20,7 @@ package walkingkooka.net.http.json;
 import walkingkooka.net.header.HttpHeaderName;
 import walkingkooka.net.http.HttpEntity;
 import walkingkooka.net.http.server.HttpHandler;
+import walkingkooka.net.http.server.HttpHandlerContext;
 import walkingkooka.reflect.PublicStaticHelper;
 import walkingkooka.tree.json.JsonNode;
 
@@ -36,8 +37,8 @@ public final class JsonHttpHandlers implements PublicStaticHelper {
     /**
      * {@see JsonHttpRequestHttpResponseBiConsumer}
      */
-    public static HttpHandler json(final Function<JsonNode, JsonNode> handler,
-                                   final Function<HttpEntity, HttpEntity> post) {
+    public static <C extends HttpHandlerContext> HttpHandler<C> json(final Function<JsonNode, JsonNode> handler,
+                                                                     final Function<HttpEntity, HttpEntity> post) {
         return JsonHttpHandler.with(handler, post);
     }
 

@@ -70,6 +70,7 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
             try {
                 json = JsonNode.parse(body);
             } catch (final Exception parseFail) {
+                response.setVersion(request.protocolVersion());
                 response.setStatus(HttpStatusCode.BAD_REQUEST.setMessage(parseFail.getMessage()));
                 response.setEntity(HttpEntity.EMPTY);
             }
@@ -96,6 +97,7 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
 
                 final HttpEntity post = this.post.apply(entity);
 
+                response.setVersion(request.protocolVersion());
                 response.setStatus(statusCode.status());
                 response.setEntity(post);
             }
@@ -113,6 +115,7 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
             bodyText = badRequest(
                 "Invalid content: " + cause.getMessage(),
                 cause,
+                request,
                 response
             );
         }
@@ -122,11 +125,13 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
             if (bodyText.isEmpty()) {
                 bodyText = badRequest(
                     "Required body missing",
+                    request,
                     response
                 );
 
             } else {
                 if (null == contentLength) {
+                    response.setVersion(request.protocolVersion());
                     response.setStatus(HttpStatusCode.LENGTH_REQUIRED.status());
                     response.setEntity(HttpEntity.EMPTY);
                     bodyText = null;
@@ -136,6 +141,7 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
                     if (bodyLength != contentLengthLong) {
                         bodyText = badRequest(
                             HttpHeaderName.CONTENT_LENGTH + ": " + contentLengthLong + " != body length=" + bodyLength + " mismatch",
+                            request,
                             response
                         );
                     }
@@ -163,15 +169,23 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
 
     private static String badRequest(final String message,
                                      final Throwable cause,
+                                     final HttpRequest request,
                                      final HttpResponse response) {
+        response.setVersion(request.protocolVersion());
         response.setStatus(HttpStatusCode.BAD_REQUEST.setMessage(message));
         response.setEntity(null != cause ? HttpEntity.dumpStackTrace(cause) : HttpEntity.EMPTY);
         return null;
     }
 
     private static String badRequest(final String message,
+                                     final HttpRequest request,
                                      final HttpResponse response) {
-        return badRequest(message, null, response);
+        return badRequest(
+            message,
+            null,
+            request,
+            response
+        );
     }
 
     /**

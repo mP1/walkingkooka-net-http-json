@@ -70,6 +70,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
 
     private final static Function<HttpEntity, HttpEntity> POST = (e) -> e.addHeader(POST_HEADER_NAME, POST_HEADER_VALUE);
 
+    private static final HttpProtocolVersion HTTP_PROTOCOL_VERSION = HttpProtocolVersion.VERSION_1_0;
+
     @Test
     public void testWithNullHandlerFails() {
         assertThrows(
@@ -91,6 +93,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     @Test
     public void testHandleMissingRequestBodyFails() {
         final HttpResponse expected = HttpResponses.recording();
+
+        expected.setVersion(HTTP_PROTOCOL_VERSION);
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Required body missing"));
         expected.setEntity(HttpEntity.EMPTY);
 
@@ -105,6 +109,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     @Test
     public void testHandleInvalidContentLengthFails() {
         final HttpResponse expected = HttpResponses.recording();
+
+        expected.setVersion(HTTP_PROTOCOL_VERSION);
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("Content-Length: 100 != body length=2 mismatch"));
         expected.setEntity(HttpEntity.EMPTY);
 
@@ -120,6 +126,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     @Test
     public void testHandleInvalidRequestBodyFails() {
         final HttpResponse expected = HttpResponses.recording();
+
+        expected.setVersion(HTTP_PROTOCOL_VERSION);
         expected.setStatus(HttpStatusCode.BAD_REQUEST.setMessage("End of text, expected [OBJECT_PROPERTY, {[WHITESPACE], \",\", OBJECT_PROPERTY_REQUIRED}], [WHITESPACE], \"}\""));
         expected.setEntity(HttpEntity.EMPTY);
 
@@ -136,6 +144,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     @Test
     public void testHandleContentLengthMissingFails() {
         final HttpResponse expected = HttpResponses.recording();
+
+        expected.setVersion(HTTP_PROTOCOL_VERSION);
         expected.setStatus(HttpStatusCode.LENGTH_REQUIRED.status());
         expected.setEntity(HttpEntity.EMPTY);
 
@@ -151,6 +161,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     @Test
     public void testHandleSuccessMissingAcceptCharset() {
         final HttpResponse expected = HttpResponses.recording();
+
+        expected.setVersion(HTTP_PROTOCOL_VERSION);
         expected.setStatus(HttpStatusCode.OK.status());
         expected.setEntity(
             HttpEntity.EMPTY
@@ -175,6 +187,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         final CharsetName charsetName = CharsetName.UTF_16;
 
         final HttpResponse expected = HttpResponses.recording();
+
+        expected.setVersion(HTTP_PROTOCOL_VERSION);
         expected.setStatus(HttpStatusCode.OK.status());
         expected.setEntity(
             HttpEntity.EMPTY
@@ -204,6 +218,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         final CharsetName charsetName = CharsetName.UTF_16;
 
         final HttpResponse expected = HttpResponses.recording();
+
+        expected.setVersion(HTTP_PROTOCOL_VERSION);
         expected.setStatus(HttpStatusCode.NO_CONTENT.status());
         expected.setEntity(
             HttpEntity.EMPTY
@@ -245,7 +261,7 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
             HttpTransport.UNSECURED,
             method,
             Url.parseRelative("/handler"),
-            HttpProtocolVersion.VERSION_1_0,
+            HTTP_PROTOCOL_VERSION,
             entity
         );
     }

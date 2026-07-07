@@ -41,7 +41,7 @@ import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -60,15 +60,19 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
             45.75
         );
 
-    private final Function<JsonNode, JsonNode> HANDLER = (i) -> {
-        this.checkEquals(INPUT, i);
+    private final BiFunction<JsonNode, FakeHttpHandlerContext, JsonNode> HANDLER = (JsonNode in, FakeHttpHandlerContext context) -> {
+        this.checkEquals(INPUT, in);
         return OUTPUT;
     };
 
     private final static HttpHeaderName<ETag> POST_HEADER_NAME = HttpHeaderName.E_TAG;
     private final static ETag POST_HEADER_VALUE = ETag.wildcard();
 
-    private final static Function<HttpEntity, HttpEntity> POST = (e) -> e.addHeader(POST_HEADER_NAME, POST_HEADER_VALUE);
+    private final static BiFunction<HttpEntity, FakeHttpHandlerContext, HttpEntity> POST = (final HttpEntity httpEntity, final FakeHttpHandlerContext context) ->
+        httpEntity.addHeader(
+            POST_HEADER_NAME,
+            POST_HEADER_VALUE
+        );
 
     private static final HttpProtocolVersion HTTP_PROTOCOL_VERSION = HttpProtocolVersion.VERSION_1_0;
 
@@ -227,7 +231,10 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         );
 
         this.handleAndCheck(
-            JsonHttpHandler.with((inputIgnored) -> null, POST),
+            JsonHttpHandler.with(
+                (JsonNode inputIgnored, final FakeHttpHandlerContext context) -> null,
+                POST
+            ),
             this.request(
                 HttpEntity.EMPTY
                     .addHeader(

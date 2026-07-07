@@ -34,8 +34,6 @@ import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.net.http.server.HttpResponses;
 import walkingkooka.tree.json.JsonNode;
 
-import java.util.function.Function;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Sample {
@@ -48,8 +46,8 @@ public class Sample {
         final JsonNode in = JsonNode.number(1);
         final JsonNode out = JsonNode.number(2);
         final HttpHandler<FakeHttpHandlerContext> handler = JsonHttpHandlers.json(
-            (json) -> out,
-            Function.identity()
+            (JsonNode json, FakeHttpHandlerContext context) -> out,
+            (HttpEntity httpEntity, FakeHttpHandlerContext context) -> httpEntity
         );
 
         final HttpRequest request = HttpRequests.post(HttpTransport.UNSECURED,

@@ -40,9 +40,9 @@ public class TestGwtTest extends GWTTestCase {
     public void testSuccessful() throws Exception {
         final JsonNode in = JsonNode.number(1);
         final JsonNode out = JsonNode.number(2);
-        final HttpHandler handler = JsonHttpHandlers.json(
-            (json) -> out,
-            Function.identity()
+        final HttpHandler<FakeHttpHandlerContext> handler = JsonHttpHandlers.json(
+            (JsonNode json, FakeHttpHandlerContext context) -> out,
+            (HttpEntity httpEntity, FakeHttpHandlerContext context) -> httpEntity
         );
 
         final HttpRequest request = HttpRequests.post(HttpTransport.UNSECURED,

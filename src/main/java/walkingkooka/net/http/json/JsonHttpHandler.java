@@ -33,23 +33,23 @@ import walkingkooka.tree.json.JsonNode;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /**
  * A handler that assumes the request contains json, and after parsing invokes the provided handler.
  */
 final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler<C> {
 
-    static <C extends HttpHandlerContext> JsonHttpHandler<C> with(final Function<JsonNode, JsonNode> handler,
-                                                                  final Function<HttpEntity, HttpEntity> post) {
+    static <C extends HttpHandlerContext> JsonHttpHandler<C> with(final BiFunction<JsonNode, C, JsonNode> handler,
+                                                                  final BiFunction<HttpEntity, C, HttpEntity> post) {
         Objects.requireNonNull(handler, "handler");
         Objects.requireNonNull(post, "post");
 
         return new JsonHttpHandler<>(handler, post);
     }
 
-    private JsonHttpHandler(final Function<JsonNode, JsonNode> handler,
-                            final Function<HttpEntity, HttpEntity> post) {
+    private JsonHttpHandler(final BiFunction<JsonNode, C, JsonNode> handler,
+                            final BiFunction<HttpEntity, C, HttpEntity> post) {
         super();
 
         this.handler = handler;
@@ -76,7 +76,10 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
             }
 
             if (null != json) {
-                final JsonNode output = this.handler.apply(json);
+                final JsonNode output = this.handler.apply(
+                    json,
+                    context
+                );
 
                 final HttpStatusCode statusCode;
                 final HttpEntity entity;
@@ -95,7 +98,10 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
                         .setContentLength();
                 }
 
-                final HttpEntity post = this.post.apply(entity);
+                final HttpEntity post = this.post.apply(
+                    entity,
+                    context
+                );
 
                 response.setVersion(request.protocolVersion());
                 response.setStatus(statusCode.status());
@@ -191,13 +197,13 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
     /**
      * The function that is invoked if the request body can be parsed into a {@link JsonNode}.
      */
-    private final Function<JsonNode, JsonNode> handler;
+    private final BiFunction<JsonNode, C, JsonNode> handler;
 
     /**
      * This is called after the JSON response is written providing an opportunity to modify, performing actions
      * such as adding headers.
      */
-    private final Function<HttpEntity, HttpEntity> post;
+    private final BiFunction<HttpEntity, C, HttpEntity> post;
 
     @Override
     public String toString() {

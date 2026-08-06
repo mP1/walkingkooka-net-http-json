@@ -163,15 +163,13 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
      */
     private static CharsetName selectCharsetName(final HttpRequest request) {
         final AcceptCharset acceptCharset = HttpHeaderName.ACCEPT_CHARSET.header(request)
-            .orElse(UTF8);
+            .orElse(AcceptCharset.UTF_8);
         final Optional<Charset> charset = acceptCharset.charset();
         if (!charset.isPresent()) {
             throw new NotAcceptableHeaderException("AcceptCharset " + acceptCharset + " contain unsupported charset");
         }
         return CharsetName.with(charset.get().name());
     }
-
-    private final static AcceptCharset UTF8 = AcceptCharset.parse("utf-8");
 
     private static String badRequest(final String message,
                                      final Throwable cause,

@@ -22,6 +22,7 @@ import walkingkooka.net.http.HttpEntity;
 import walkingkooka.net.http.server.HttpHandler;
 import walkingkooka.net.http.server.HttpHandlerContext;
 import walkingkooka.reflect.PublicStaticHelper;
+import walkingkooka.text.LineEnding;
 import walkingkooka.tree.json.JsonNode;
 
 import java.util.function.BiFunction;
@@ -38,8 +39,13 @@ public final class JsonHttpHandlers implements PublicStaticHelper {
      * {@see JsonHttpRequestHttpResponseBiConsumer}
      */
     public static <C extends HttpHandlerContext> HttpHandler<C> json(final BiFunction<JsonNode, C, JsonNode> handler,
-                                                                     final BiFunction<HttpEntity, C, HttpEntity> post) {
-        return JsonHttpHandler.with(handler, post);
+                                                                     final BiFunction<HttpEntity, C, HttpEntity> post,
+                                                                     final LineEnding lineEnding) {
+        return JsonHttpHandler.with(
+            handler,
+            post,
+            lineEnding
+        );
     }
 
     /**

@@ -34,6 +34,7 @@ import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.net.http.server.HttpResponses;
+import walkingkooka.text.LineEnding;
 import walkingkooka.tree.json.JsonNode;
 
 import java.util.function.Function;
@@ -47,7 +48,8 @@ public class JunitTest {
         final JsonNode out = JsonNode.number(2);
         final HttpHandler<FakeHttpHandlerContext> handler = JsonHttpHandlers.json(
             (JsonNode json, FakeHttpHandlerContext context) -> out,
-            (HttpEntity httpEntity, FakeHttpHandlerContext context) -> httpEntity
+            (HttpEntity httpEntity, FakeHttpHandlerContext context) -> httpEntity,
+            LineEnding.NL
         );
 
         final HttpRequest request = HttpRequests.post(HttpTransport.UNSECURED,

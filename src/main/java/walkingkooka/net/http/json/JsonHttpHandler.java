@@ -28,6 +28,7 @@ import walkingkooka.net.http.server.HttpHandler;
 import walkingkooka.net.http.server.HttpHandlerContext;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpResponse;
+import walkingkooka.text.LineEnding;
 import walkingkooka.tree.json.JsonNode;
 
 import java.nio.charset.Charset;
@@ -41,19 +42,27 @@ import java.util.function.BiFunction;
 final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler<C> {
 
     static <C extends HttpHandlerContext> JsonHttpHandler<C> with(final BiFunction<JsonNode, C, JsonNode> handler,
-                                                                  final BiFunction<HttpEntity, C, HttpEntity> post) {
+                                                                  final BiFunction<HttpEntity, C, HttpEntity> post,
+                                                                  final LineEnding lineEnding) {
         Objects.requireNonNull(handler, "handler");
         Objects.requireNonNull(post, "post");
+        Objects.requireNonNull(lineEnding, "lineEnding");
 
-        return new JsonHttpHandler<>(handler, post);
+        return new JsonHttpHandler<>(
+            handler,
+            post,
+            lineEnding
+        );
     }
 
     private JsonHttpHandler(final BiFunction<JsonNode, C, JsonNode> handler,
-                            final BiFunction<HttpEntity, C, HttpEntity> post) {
+                            final BiFunction<HttpEntity, C, HttpEntity> post,
+                            final LineEnding lineEnding) {
         super();
 
         this.handler = handler;
         this.post = post;
+        this.lineEnding = lineEnding;
     }
 
     @Override
@@ -64,7 +73,10 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
         Objects.requireNonNull(response, "response");
         Objects.requireNonNull(context, "context");
 
-        final String body = resourceTextOrBadRequest(request, response);
+        final String body = this.resourceTextOrBadRequest(
+            request,
+            response
+        );
         if (null != body) {
             JsonNode json = null;
             try {
@@ -113,12 +125,13 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
     /**
      * Reads and returns the body as text, with null signifying an error occurred and a bad request response set.
      */
-    private static String resourceTextOrBadRequest(final HttpRequest request, final HttpResponse response) {
+    private String resourceTextOrBadRequest(final HttpRequest request,
+                                            final HttpResponse response) {
         String bodyText;
         try {
             bodyText = request.bodyText();
         } catch (final RuntimeException cause) {
-            bodyText = badRequest(
+            bodyText = this.badRequest(
                 "Invalid content: " + cause.getMessage(),
                 cause,
                 request,
@@ -171,20 +184,27 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
         return CharsetName.with(charset.get().name());
     }
 
-    private static String badRequest(final String message,
-                                     final Throwable cause,
-                                     final HttpRequest request,
-                                     final HttpResponse response) {
+    private String badRequest(final String message,
+                              final Throwable cause,
+                              final HttpRequest request,
+                              final HttpResponse response) {
         response.setVersion(request.protocolVersion());
         response.setStatus(HttpStatusCode.BAD_REQUEST.setMessage(message));
-        response.setEntity(null != cause ? HttpEntity.dumpStackTrace(cause) : HttpEntity.EMPTY);
+        response.setEntity(
+            null != cause ?
+                HttpEntity.dumpStackTrace(
+                    cause,
+                    this.lineEnding
+                ) :
+                HttpEntity.EMPTY
+        );
         return null;
     }
 
-    private static String badRequest(final String message,
-                                     final HttpRequest request,
-                                     final HttpResponse response) {
-        return badRequest(
+    private String badRequest(final String message,
+                              final HttpRequest request,
+                              final HttpResponse response) {
+        return this.badRequest(
             message,
             null,
             request,
@@ -202,6 +222,8 @@ final class JsonHttpHandler<C extends HttpHandlerContext> implements HttpHandler
      * such as adding headers.
      */
     private final BiFunction<HttpEntity, C, HttpEntity> post;
+
+    private final LineEnding lineEnding;
 
     @Override
     public String toString() {

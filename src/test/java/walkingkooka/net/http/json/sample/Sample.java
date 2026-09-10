@@ -17,6 +17,7 @@
 
 package walkingkooka.net.http.json.sample;
 
+import org.junit.jupiter.api.Test;
 import walkingkooka.net.Url;
 import walkingkooka.net.header.CharsetName;
 import walkingkooka.net.header.HttpHeaderName;
@@ -40,10 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class Sample {
 
     public static void main(final String[] args) {
-        test();
+        final Sample sample = new Sample();
+        sample.test();
     }
 
-    private static void test() {
+    @Test
+    public void test() {
         final JsonNode in = JsonNode.number(1);
         final JsonNode out = JsonNode.number(2);
         final HttpHandler<FakeHttpHandlerContext> handler = JsonHttpHandlers.json(
@@ -72,6 +75,7 @@ public class Sample {
         final String responseBody = out.toString();
 
         final HttpResponse expected = HttpResponses.recording();
+        expected.setVersion(HttpProtocolVersion.VERSION_1_0);
         expected.setStatus(HttpStatusCode.OK.status());
         expected.setEntity(
             HttpEntity.EMPTY

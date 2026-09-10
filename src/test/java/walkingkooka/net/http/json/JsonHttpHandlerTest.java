@@ -38,6 +38,7 @@ import walkingkooka.net.http.server.HttpRequests;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.net.http.server.HttpResponses;
 import walkingkooka.reflect.JavaVisibility;
+import walkingkooka.text.HasLineEndingTesting;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
 
@@ -46,6 +47,7 @@ import java.util.function.BiFunction;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHandler<FakeHttpHandlerContext>, FakeHttpHandlerContext>,
+    HasLineEndingTesting,
     ToStringTesting<JsonHttpHandler<FakeHttpHandlerContext>> {
 
     private final static JsonNode INPUT = JsonNode.object()
@@ -80,7 +82,11 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     public void testWithNullHandlerFails() {
         assertThrows(
             NullPointerException.class,
-            () -> JsonHttpHandler.with(null, POST)
+            () -> JsonHttpHandler.with(
+                null,
+                POST,
+                LINE_ENDING
+            )
         );
     }
 
@@ -88,7 +94,23 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
     public void testWithNullPostFails() {
         assertThrows(
             NullPointerException.class,
-            () -> JsonHttpHandler.with(HANDLER, null)
+            () -> JsonHttpHandler.with(
+                HANDLER,
+                null,
+                LINE_ENDING
+            )
+        );
+    }
+
+    @Test
+    public void testWithNullLineEndingFails() {
+        assertThrows(
+            NullPointerException.class,
+            () -> JsonHttpHandler.with(
+                HANDLER,
+                POST,
+                null
+            )
         );
     }
 
@@ -233,7 +255,8 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
         this.handleAndCheck(
             JsonHttpHandler.with(
                 (JsonNode inputIgnored, final FakeHttpHandlerContext context) -> null,
-                POST
+                POST,
+                LINE_ENDING
             ),
             this.request(
                 HttpEntity.EMPTY
@@ -252,7 +275,11 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
 
     @Override
     public JsonHttpHandler<FakeHttpHandlerContext> createHttpHandler() {
-        return JsonHttpHandler.with(HANDLER, POST);
+        return JsonHttpHandler.with(
+            HANDLER,
+            POST,
+            LINE_ENDING
+        );
     }
 
     private HttpRequest request(final HttpEntity entity) {
@@ -282,7 +309,14 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHan
 
     @Test
     public void testToString() {
-        this.toStringAndCheck(JsonHttpHandler.with(HANDLER, POST), HANDLER + " " + POST);
+        this.toStringAndCheck(
+            JsonHttpHandler.with(
+                HANDLER,
+                POST,
+                LINE_ENDING
+            ),
+            HANDLER + " " + POST
+        );
     }
 
     // ClassTesting.....................................................................................................

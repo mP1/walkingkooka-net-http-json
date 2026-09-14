@@ -37,7 +37,6 @@ import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
 import walkingkooka.net.http.server.HttpResponse;
 import walkingkooka.net.http.server.HttpResponses;
-import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.text.HasLineEndingTesting;
 import walkingkooka.tree.json.JsonNode;
 import walkingkooka.tree.json.JsonPropertyName;
@@ -324,10 +323,5 @@ public final class JsonHttpHandlerTest implements HttpHandlerTesting2<JsonHttpHa
     @Override
     public Class<JsonHttpHandler<FakeHttpHandlerContext>> type() {
         return Cast.to(JsonHttpHandler.class);
-    }
-
-    @Override
-    public JavaVisibility typeVisibility() {
-        return JavaVisibility.PACKAGE_PRIVATE;
     }
 }

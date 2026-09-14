@@ -32,7 +32,7 @@ import walkingkooka.net.http.HttpProtocolVersion;
 import walkingkooka.net.http.HttpStatusCode;
 import walkingkooka.net.http.HttpTransport;
 import walkingkooka.net.http.server.FakeHttpHandlerContext;
-import walkingkooka.net.http.server.HttpHandlerTesting;
+import walkingkooka.net.http.server.HttpHandlerTesting2;
 import walkingkooka.net.http.server.HttpRequest;
 import walkingkooka.net.http.server.HttpRequests;
 import walkingkooka.net.http.server.HttpResponse;
@@ -46,7 +46,7 @@ import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class JsonHttpHandlerTest implements HttpHandlerTesting<JsonHttpHandler<FakeHttpHandlerContext>, FakeHttpHandlerContext>,
+public final class JsonHttpHandlerTest implements HttpHandlerTesting2<JsonHttpHandler<FakeHttpHandlerContext>, FakeHttpHandlerContext>,
     HasLineEndingTesting,
     ToStringTesting<JsonHttpHandler<FakeHttpHandlerContext>> {
 

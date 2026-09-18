@@ -17,7 +17,6 @@
 
 package walkingkooka.net.http.json;
 
-import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.reflect.PublicStaticHelperTesting;
 
 import java.lang.reflect.Method;
@@ -27,11 +26,6 @@ public final class JsonHttpHandlersTest implements PublicStaticHelperTesting<Jso
     @Override
     public Class<JsonHttpHandlers> type() {
         return JsonHttpHandlers.class;
-    }
-
-    @Override
-    public JavaVisibility typeVisibility() {
-        return JavaVisibility.PUBLIC;
     }
 
     @Override

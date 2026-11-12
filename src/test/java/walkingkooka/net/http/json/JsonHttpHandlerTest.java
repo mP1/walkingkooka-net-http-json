@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class JsonHttpHandlerTest implements HttpHandlerTesting2<JsonHttpHandler<FakeHttpHandlerContext>, FakeHttpHandlerContext>,
     HasLineEndingTesting,
-    ToStringTesting<JsonHttpHandler<FakeHttpHandlerContext>> {
+    ToStringTesting {
 
     private final static JsonNode INPUT = JsonNode.object()
         .set(
